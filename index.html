@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Player Registration</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: '#0a0a0a',
+            card: '#1a1a1a',
+            border: '#333',
+            gold: '#FFD700',
+            success: '#34C759',
+            warning: '#FF9500',
+            danger: '#FF3B30',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    input, select, textarea {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+    .step-dot.active { background-color: #FFD700; }
+    .step-dot.completed { background-color: #34C759; }
+  </style>
+</head>
+<body class="bg-dark min-h-screen text-white">
+  
+  <!-- Loading State -->
+  <div id="loading" class="min-h-screen flex items-center justify-center">
+    <div class="text-center">
+      <div class="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p class="text-gray-400">Loading registration...</p>
+    </div>
+  </div>
+
+  <!-- No Season State -->
+  <div id="no-season" class="min-h-screen flex items-center justify-center p-4 hidden">
+    <div class="text-center">
+      <div class="text-6xl mb-4">⚠️</div>
+      <h1 class="text-2xl font-bold mb-2">Registration Closed</h1>
+      <p class="text-gray-400">There is no active season for registration at this time.</p>
+      <p class="text-gray-400 mt-2">Please contact your coach for more information.</p>
+    </div>
+  </div>
+
+  <!-- Success State -->
+  <div id="success" class="min-h-screen flex items-center justify-center p-4 hidden">
+    <div class="max-w-md w-full">
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-success rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold mb-2">Registration Complete!</h1>
+        <p class="text-gray-400">Welcome to <span id="success-season-name">the team</span>!</p>
+      </div>
+      
+      <div class="bg-card rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4 text-gold">Payment Information</h2>
+        <div class="space-y-3 text-sm">
+          <div class="flex justify-between">
+            <span class="text-gray-400">Registration Fee</span>
+            <span>$150</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Uniform Fee</span>
+            <span>$35</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Monthly Fees (3 months)</span>
+            <span>$150</span>
+          </div>
+          <div class="border-t border-border pt-3 flex justify-between font-bold">
+            <span>Total</span>
+            <span class="text-gold">$335</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-card rounded-2xl p-6">
+        <h2 class="text-lg font-bold mb-4">Payment Methods</h2>
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center font-bold text-sm">V</div>
+            <div>
+              <p class="font-medium">Venmo</p>
+              <p class="text-gold">@BlackHornetsVB</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">Z</div>
+            <div>
+              <p class="font-medium">Zelle</p>
+              <p class="text-gold">pay@blackhornets.com</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center font-bold text-sm">$</div>
+            <div>
+              <p class="font-medium">Cash App</p>
+              <p class="text-gold">$BlackHornetsVB</p>
+            </div>
+          </div>
+        </div>
+        <p class="text-gray-400 text-sm mt-4">Please include player name in payment memo.</p>
+      </div>
+
+      <p class="text-center text-gray-400 text-sm mt-6">Your coach will be in touch soon with next steps!</p>
+    </div>
+  </div>
+
+  <!-- Registration Form -->
+  <div id="form-container" class="min-h-screen p-4 hidden">
+    <div class="max-w-lg mx-auto">
+      
+      <!-- Header -->
+      <div class="text-center py-6">
+        <h1 class="text-2xl font-bold text-gold">Player Registration</h1>
+        <p id="season-name" class="text-gray-400 mt-1">Loading...</p>
+      </div>
+
+      <!-- Progress Steps -->
+      <div class="flex justify-center gap-2 mb-8">
+        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="1"></div>
+        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="2"></div>
+        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="3"></div>
+        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="4"></div>
+        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="5"></div>
+      </div>
+
+      <!-- Step 1: Player Info -->
+      <div id="step-1" class="step-content">
+        <div class="bg-card rounded-2xl p-6">
+          <h2 class="text-lg font-bold mb-1">Player Information</h2>
+          <p class="text-gray-400 text-sm mb-6">Step 1 of 5</p>
+          
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">First Name *</label>
+                <input type="text" id="first_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Last Name *</label>
+                <input type="text" id="last_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Date of Birth *</label>
+              <input type="date" id="dob" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Grade (Fall 2025) *</label>
+              <select id="grade" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                <option value="">Select Grade</option>
+                <option value="5">5th Grade</option>
+                <option value="6">6th Grade</option>
+                <option value="7">7th Grade</option>
+                <option value="8">8th Grade</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">School *</label>
+              <input type="text" id="school" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Player Type *</label>
+              <select id="player_type" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                <option value="">Select Type</option>
+                <option value="new">New Player</option>
+                <option value="returning">Returning Player</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <button onclick="nextStep(1)" class="w-full bg-gold text-dark font-bold py-4 rounded-xl mt-6">
+          Continue
+        </button>
+      </div>
+
+      <!-- Step 2: Parent/Guardian Info -->
+      <div id="step-2" class="step-content hidden">
+        <div class="bg-card rounded-2xl p-6">
+          <h2 class="text-lg font-bold mb-1">Parent/Guardian Information</h2>
+          <p class="text-gray-400 text-sm mb-6">Step 2 of 5</p>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Parent/Guardian Name *</label>
+              <input type="text" id="parent_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Phone *</label>
+              <input type="tel" id="parent_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Email *</label>
+              <input type="email" id="parent_email" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Address *</label>
+              <input type="text" id="address" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Street, City, State, ZIP" required>
+            </div>
+            
+            <div class="border-t border-border pt-4 mt-4">
+              <p class="text-sm text-gray-400 mb-4">Secondary Parent/Guardian (Optional)</p>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Name</label>
+                  <input type="text" id="parent_2_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white">
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Phone</label>
+                  <input type="tel" id="parent_2_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white">
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Email</label>
+                  <input type="email" id="parent_2_email" class="w-full bg-dark border border-border rounded-xl p-4 text-white">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-4 mt-6">
+          <button onclick="prevStep(2)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">
+            Back
+          </button>
+          <button onclick="nextStep(2)" class="flex-1 bg-gold text-dark font-bold py-4 rounded-xl">
+            Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3: Emergency & Medical -->
+      <div id="step-3" class="step-content hidden">
+        <div class="bg-card rounded-2xl p-6">
+          <h2 class="text-lg font-bold mb-1">Emergency Contact & Medical</h2>
+          <p class="text-gray-400 text-sm mb-6">Step 3 of 5</p>
+          
+          <div class="space-y-4">
+            <p class="text-sm text-gold">Emergency Contact (other than parent)</p>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Contact Name *</label>
+              <input type="text" id="emergency_contact_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Contact Phone *</label>
+              <input type="tel" id="emergency_contact_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Relationship *</label>
+              <input type="text" id="emergency_contact_relation" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="e.g., Grandparent, Aunt, Uncle" required>
+            </div>
+            
+            <div class="border-t border-border pt-4 mt-4">
+              <p class="text-sm text-gold mb-4">Medical Information</p>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Medical Conditions</label>
+                  <textarea id="medical_conditions" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="List any medical conditions or write 'None'"></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Allergies</label>
+                  <textarea id="allergies" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="List any allergies or write 'None'"></textarea>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Current Medications</label>
+                  <textarea id="medications" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="List any medications or write 'None'"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-4 mt-6">
+          <button onclick="prevStep(3)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">
+            Back
+          </button>
+          <button onclick="nextStep(3)" class="flex-1 bg-gold text-dark font-bold py-4 rounded-xl">
+            Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4: Volleyball Details -->
+      <div id="step-4" class="step-content hidden">
+        <div class="bg-card rounded-2xl p-6">
+          <h2 class="text-lg font-bold mb-1">Volleyball Details</h2>
+          <p class="text-gray-400 text-sm mb-6">Step 4 of 5</p>
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Preferred Position</label>
+              <select id="position" class="w-full bg-dark border border-border rounded-xl p-4 text-white">
+                <option value="">No Preference</option>
+                <option value="OH">Outside Hitter (OH)</option>
+                <option value="S">Setter (S)</option>
+                <option value="MB">Middle Blocker (MB)</option>
+                <option value="OPP">Opposite (OPP)</option>
+                <option value="L">Libero (L)</option>
+                <option value="DS">Defensive Specialist (DS)</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Experience Level *</label>
+              <select id="experience_level" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                <option value="">Select Level</option>
+                <option value="none">No Experience</option>
+                <option value="beginner">Beginner (< 1 year)</option>
+                <option value="intermediate">Intermediate (1-2 years)</option>
+                <option value="advanced">Advanced (3+ years)</option>
+                <option value="club">Club Experience</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Experience Details</label>
+              <textarea id="experience_details" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="Previous teams, camps, training..."></textarea>
+            </div>
+            
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">Goals for This Season</label>
+              <textarea id="goals" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="What do you hope to achieve?"></textarea>
+            </div>
+            
+            <div class="border-t border-border pt-4 mt-4">
+              <p class="text-sm text-gold mb-4">Jersey Preferences</p>
+              
+              <div class="grid grid-cols-3 gap-4">
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">1st Choice</label>
+                  <input type="number" id="jersey_pref_1" class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">2nd Choice</label>
+                  <input type="number" id="jersey_pref_2" class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">3rd Choice</label>
+                  <input type="number" id="jersey_pref_3" class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
+                </div>
+              </div>
+            </div>
+            
+            <div class="border-t border-border pt-4 mt-4">
+              <p class="text-sm text-gold mb-4">Uniform Sizes</p>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Jersey Size *</label>
+                  <select id="uniform_size_jersey" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                    <option value="">Select Size</option>
+                    <option value="YS">Youth Small</option>
+                    <option value="YM">Youth Medium</option>
+                    <option value="YL">Youth Large</option>
+                    <option value="AS">Adult Small</option>
+                    <option value="AM">Adult Medium</option>
+                    <option value="AL">Adult Large</option>
+                    <option value="AXL">Adult XL</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Shorts Size *</label>
+                  <select id="uniform_size_shorts" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                    <option value="">Select Size</option>
+                    <option value="YS">Youth Small</option>
+                    <option value="YM">Youth Medium</option>
+                    <option value="YL">Youth Large</option>
+                    <option value="AS">Adult Small</option>
+                    <option value="AM">Adult Medium</option>
+                    <option value="AL">Adult Large</option>
+                    <option value="AXL">Adult XL</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-4 mt-6">
+          <button onclick="prevStep(4)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">
+            Back
+          </button>
+          <button onclick="nextStep(4)" class="flex-1 bg-gold text-dark font-bold py-4 rounded-xl">
+            Continue
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 5: Waivers -->
+      <div id="step-5" class="step-content hidden">
+        <div class="bg-card rounded-2xl p-6">
+          <h2 class="text-lg font-bold mb-1">Waivers & Agreement</h2>
+          <p class="text-gray-400 text-sm mb-6">Step 5 of 5</p>
+          
+          <div class="space-y-6">
+            <!-- Liability Waiver -->
+            <div class="bg-dark rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <input type="checkbox" id="waiver_liability" class="mt-1 w-5 h-5 rounded" required>
+                <div>
+                  <label for="waiver_liability" class="font-medium">Liability Waiver *</label>
+                  <p class="text-sm text-gray-400 mt-1">I understand that volleyball involves physical activity and risk of injury. I release the organization, coaches, and volunteers from liability for any injuries that may occur during practices, games, or events.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Photo Release -->
+            <div class="bg-dark rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <input type="checkbox" id="waiver_photo" class="mt-1 w-5 h-5 rounded">
+                <div>
+                  <label for="waiver_photo" class="font-medium">Photo/Video Release</label>
+                  <p class="text-sm text-gray-400 mt-1">I grant permission to photograph and/or video record my child for use in promotional materials, social media, and team communications.</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Code of Conduct -->
+            <div class="bg-dark rounded-xl p-4">
+              <div class="flex items-start gap-3">
+                <input type="checkbox" id="waiver_conduct" class="mt-1 w-5 h-5 rounded" required>
+                <div>
+                  <label for="waiver_conduct" class="font-medium">Code of Conduct *</label>
+                  <p class="text-sm text-gray-400 mt-1">I agree that my child and our family will demonstrate good sportsmanship, respect coaches and officials, and follow all team rules and policies.</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="border-t border-border pt-4">
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Parent/Guardian Signature (Type Full Name) *</label>
+                <input type="text" id="waiver_signed_by" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Type your full legal name" required>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">By typing your name above, you agree this constitutes a legal signature.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex gap-4 mt-6">
+          <button onclick="prevStep(5)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">
+            Back
+          </button>
+          <button onclick="submitRegistration()" id="submit-btn" class="flex-1 bg-success text-white font-bold py-4 rounded-xl">
+            Complete Registration
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Supabase client
+    const supabaseUrl = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2MjI0MDIsImV4cCI6MjA1MTE5ODQwMn0.f0Bvs8rSz-C6BwBI95zVa8xpigp3ySLGurMsZDxxVHA';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    let activeSeason = null;
+    let currentStep = 1;
+
+    // Initialize
+    async function init() {
+      try {
+        // Fetch active season
+        const { data: seasons, error } = await supabase
+          .from('seasons')
+          .select('*')
+          .eq('status', 'active')
+          .limit(1);
+
+        if (error) throw error;
+
+        if (!seasons || seasons.length === 0) {
+          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('no-season').classList.remove('hidden');
+          return;
+        }
+
+        activeSeason = seasons[0];
+        document.getElementById('season-name').textContent = activeSeason.name;
+        document.getElementById('success-season-name').textContent = activeSeason.name;
+
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('form-container').classList.remove('hidden');
+        updateStepDots();
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load registration. Please try again.');
+      }
+    }
+
+    // Step navigation
+    function updateStepDots() {
+      document.querySelectorAll('.step-dot').forEach(dot => {
+        const step = parseInt(dot.dataset.step);
+        dot.classList.remove('active', 'completed');
+        if (step === currentStep) {
+          dot.classList.add('active');
+        } else if (step < currentStep) {
+          dot.classList.add('completed');
+        }
+      });
+    }
+
+    function validateStep(step) {
+      const validations = {
+        1: ['first_name', 'last_name', 'dob', 'grade', 'school', 'player_type'],
+        2: ['parent_name', 'parent_phone', 'parent_email', 'address'],
+        3: ['emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation'],
+        4: ['experience_level', 'uniform_size_jersey', 'uniform_size_shorts'],
+        5: ['waiver_liability', 'waiver_conduct', 'waiver_signed_by']
+      };
+
+      const fields = validations[step];
+      for (const fieldId of fields) {
+        const el = document.getElementById(fieldId);
+        if (el.type === 'checkbox') {
+          if (!el.checked) {
+            alert('Please complete all required fields.');
+            el.focus();
+            return false;
+          }
+        } else {
+          if (!el.value.trim()) {
+            alert('Please complete all required fields.');
+            el.focus();
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function nextStep(step) {
+      if (!validateStep(step)) return;
+      
+      document.getElementById(`step-${step}`).classList.add('hidden');
+      document.getElementById(`step-${step + 1}`).classList.remove('hidden');
+      currentStep = step + 1;
+      updateStepDots();
+      window.scrollTo(0, 0);
+    }
+
+    function prevStep(step) {
+      document.getElementById(`step-${step}`).classList.add('hidden');
+      document.getElementById(`step-${step - 1}`).classList.remove('hidden');
+      currentStep = step - 1;
+      updateStepDots();
+      window.scrollTo(0, 0);
+    }
+
+    // Submit registration
+    async function submitRegistration() {
+      if (!validateStep(5)) return;
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      try {
+        // Gather all form data
+        const playerData = {
+          season_id: activeSeason.id,
+          first_name: document.getElementById('first_name').value.trim(),
+          last_name: document.getElementById('last_name').value.trim(),
+          dob: document.getElementById('dob').value,
+          grade: parseInt(document.getElementById('grade').value),
+          school: document.getElementById('school').value.trim(),
+          player_type: document.getElementById('player_type').value,
+          status: 'new',
+          
+          parent_name: document.getElementById('parent_name').value.trim(),
+          parent_phone: document.getElementById('parent_phone').value.trim(),
+          parent_email: document.getElementById('parent_email').value.trim(),
+          address: document.getElementById('address').value.trim(),
+          parent_2_name: document.getElementById('parent_2_name').value.trim() || null,
+          parent_2_phone: document.getElementById('parent_2_phone').value.trim() || null,
+          parent_2_email: document.getElementById('parent_2_email').value.trim() || null,
+          
+          emergency_contact_name: document.getElementById('emergency_contact_name').value.trim(),
+          emergency_contact_phone: document.getElementById('emergency_contact_phone').value.trim(),
+          emergency_contact_relation: document.getElementById('emergency_contact_relation').value.trim(),
+          
+          medical_conditions: document.getElementById('medical_conditions').value.trim() || null,
+          allergies: document.getElementById('allergies').value.trim() || null,
+          medications: document.getElementById('medications').value.trim() || null,
+          
+          position: document.getElementById('position').value || null,
+          experience_level: document.getElementById('experience_level').value,
+          experience_details: document.getElementById('experience_details').value.trim() || null,
+          goals: document.getElementById('goals').value.trim() || null,
+          
+          jersey_pref_1: document.getElementById('jersey_pref_1').value ? parseInt(document.getElementById('jersey_pref_1').value) : null,
+          jersey_pref_2: document.getElementById('jersey_pref_2').value ? parseInt(document.getElementById('jersey_pref_2').value) : null,
+          jersey_pref_3: document.getElementById('jersey_pref_3').value ? parseInt(document.getElementById('jersey_pref_3').value) : null,
+          
+          uniform_size_jersey: document.getElementById('uniform_size_jersey').value,
+          uniform_size_shorts: document.getElementById('uniform_size_shorts').value,
+          
+          waiver_liability: document.getElementById('waiver_liability').checked,
+          waiver_photo: document.getElementById('waiver_photo').checked,
+          waiver_conduct: document.getElementById('waiver_conduct').checked,
+          waiver_signed_by: document.getElementById('waiver_signed_by').value.trim(),
+          waiver_signed_date: new Date().toISOString(),
+          
+          registration_source: 'web',
+          registration_date: new Date().toISOString(),
+        };
+
+        // Insert player
+        const { data: player, error: playerError } = await supabase
+          .from('players')
+          .insert(playerData)
+          .select()
+          .single();
+
+        if (playerError) throw playerError;
+
+        // Create payment records
+        const payments = [
+          { season_id: activeSeason.id, player_id: player.id, fee_type: 'registration', amount: activeSeason.fee_registration || 150, paid: false },
+          { season_id: activeSeason.id, player_id: player.id, fee_type: 'uniform', amount: activeSeason.fee_uniform || 35, paid: false },
+          { season_id: activeSeason.id, player_id: player.id, fee_type: 'monthly_1', amount: activeSeason.fee_monthly || 50, paid: false },
+          { season_id: activeSeason.id, player_id: player.id, fee_type: 'monthly_2', amount: activeSeason.fee_monthly || 50, paid: false },
+          { season_id: activeSeason.id, player_id: player.id, fee_type: 'monthly_3', amount: activeSeason.fee_monthly || 50, paid: false },
+        ];
+
+        const { error: paymentsError } = await supabase
+          .from('payments')
+          .insert(payments);
+
+        if (paymentsError) throw paymentsError;
+
+        // Show success
+        document.getElementById('form-container').classList.add('hidden');
+        document.getElementById('success').classList.remove('hidden');
+        window.scrollTo(0, 0);
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Registration failed: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Complete Registration';
+      }
+    }
+
+    // Start
+    init();
+  </script>
+
+</body>
+</html>

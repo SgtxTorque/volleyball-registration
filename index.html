@@ -481,9 +481,9 @@
 
   <script>
     // Supabase client
-    const supabaseUrl = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2MjI0MDIsImV4cCI6MjA1MTE5ODQwMn0.f0Bvs8rSz-C6BwBI95zVa8xpigp3ySLGurMsZDxxVHA';
-    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    const SUPABASE_URL = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2MjI0MDIsImV4cCI6MjA1MTE5ODQwMn0.f0Bvs8rSz-C6BwBI95zVa8xpigp3ySLGurMsZDxxVHA';
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let activeSeason = null;
     let currentStep = 1;
@@ -492,7 +492,7 @@
     async function init() {
       try {
         // Fetch active season
-        const { data: seasons, error } = await supabase
+        const { data: seasons, error } = await db
           .from('seasons')
           .select('*')
           .eq('status', 'active')
@@ -639,7 +639,7 @@
         };
 
         // Insert player
-        const { data: player, error: playerError } = await supabase
+        const { data: player, error: playerError } = await db
           .from('players')
           .insert(playerData)
           .select()
@@ -656,7 +656,7 @@
           { season_id: activeSeason.id, player_id: player.id, fee_type: 'monthly_3', amount: activeSeason.fee_monthly || 50, paid: false },
         ];
 
-        const { error: paymentsError } = await supabase
+        const { error: paymentsError } = await db
           .from('payments')
           .insert(payments);
 
@@ -678,6 +678,3 @@
     // Start
     init();
   </script>
-
-</body>
-</html>

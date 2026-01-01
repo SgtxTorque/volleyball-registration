@@ -51,8 +51,25 @@
     <div class="text-center">
       <div class="text-6xl mb-4">&#9888;</div>
       <h1 class="text-2xl font-bold mb-2">Registration Closed</h1>
-      <p class="text-gray-400">There is no active season for registration at this time.</p>
+      <p class="text-gray-400">There are no seasons open for registration at this time.</p>
       <p class="text-gray-400 mt-2">Please contact your coach for more information.</p>
+    </div>
+  </div>
+
+  <!-- Season Selector -->
+  <div id="season-selector" class="min-h-screen flex items-center justify-center p-4 hidden">
+    <div class="max-w-md w-full">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 bg-gold rounded-full flex items-center justify-center mx-auto mb-4">
+          <span class="text-2xl font-bold text-dark">VB</span>
+        </div>
+        <h1 class="text-2xl font-bold">Black Hornets Volleyball</h1>
+        <p class="text-gray-400 mt-2">Select a season to register for</p>
+      </div>
+      
+      <div id="season-buttons" class="space-y-3">
+        <!-- Season buttons will be inserted here -->
+      </div>
     </div>
   </div>
 
@@ -120,6 +137,10 @@
       </div>
 
       <p class="text-center text-gray-400 text-sm mt-6">Your coach will be in touch soon with next steps!</p>
+      
+      <button onclick="registerAnother()" class="w-full bg-card border border-border text-white font-bold py-4 rounded-xl mt-6">
+        Register Another Player
+      </button>
     </div>
   </div>
 
@@ -131,6 +152,7 @@
       <div class="text-center py-6">
         <h1 class="text-2xl font-bold text-gold">Player Registration</h1>
         <p id="season-name" class="text-gray-400 mt-1">Loading...</p>
+        <button onclick="backToSeasonSelect()" id="change-season-btn" class="text-sm text-blue-400 mt-2 hidden">Change Season</button>
       </div>
 
       <!-- Progress Steps -->
@@ -211,7 +233,7 @@
             
             <div>
               <label class="block text-sm text-gray-400 mb-2">Phone *</label>
-              <input type="tel" id="parent_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+              <input type="tel" id="parent_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="000-000-0000" oninput="formatPhone(this)" maxlength="12" required>
             </div>
             
             <div>
@@ -220,8 +242,30 @@
             </div>
             
             <div>
-              <label class="block text-sm text-gray-400 mb-2">Address *</label>
-              <input type="text" id="address" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Street, City, State, ZIP" required>
+              <label class="block text-sm text-gray-400 mb-2">Street Address *</label>
+              <input type="text" id="street" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-3">
+              <div class="col-span-2">
+                <label class="block text-sm text-gray-400 mb-2">City *</label>
+                <input type="text" id="city" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">State *</label>
+                <select id="state" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                  <option value="TX">TX</option>
+                  <option value="OK">OK</option>
+                  <option value="AR">AR</option>
+                  <option value="LA">LA</option>
+                  <option value="NM">NM</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="w-32">
+              <label class="block text-sm text-gray-400 mb-2">ZIP *</label>
+              <input type="text" id="zip" class="w-full bg-dark border border-border rounded-xl p-4 text-white" maxlength="5" required>
             </div>
             
             <div class="border-t border-border pt-4 mt-4">
@@ -234,7 +278,7 @@
                 </div>
                 <div>
                   <label class="block text-sm text-gray-400 mb-2">Phone</label>
-                  <input type="tel" id="parent_2_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white">
+                  <input type="tel" id="parent_2_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="000-000-0000" oninput="formatPhone(this)" maxlength="12">
                 </div>
                 <div>
                   <label class="block text-sm text-gray-400 mb-2">Email</label>
@@ -271,7 +315,7 @@
             
             <div>
               <label class="block text-sm text-gray-400 mb-2">Contact Phone *</label>
-              <input type="tel" id="emergency_contact_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+              <input type="tel" id="emergency_contact_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="000-000-0000" oninput="formatPhone(this)" maxlength="12" required>
             </div>
             
             <div>
@@ -423,7 +467,6 @@
           <p class="text-gray-400 text-sm mb-6">Step 5 of 5</p>
           
           <div class="space-y-6">
-            <!-- Liability Waiver -->
             <div class="bg-dark rounded-xl p-4">
               <div class="flex items-start gap-3">
                 <input type="checkbox" id="waiver_liability" class="mt-1 w-5 h-5 rounded" required>
@@ -434,7 +477,6 @@
               </div>
             </div>
             
-            <!-- Photo Release -->
             <div class="bg-dark rounded-xl p-4">
               <div class="flex items-start gap-3">
                 <input type="checkbox" id="waiver_photo" class="mt-1 w-5 h-5 rounded">
@@ -445,7 +487,6 @@
               </div>
             </div>
             
-            <!-- Code of Conduct -->
             <div class="bg-dark rounded-xl p-4">
               <div class="flex items-start gap-3">
                 <input type="checkbox" id="waiver_conduct" class="mt-1 w-5 h-5 rounded" required>
@@ -484,37 +525,136 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTEwODMsImV4cCI6MjA4Mjc4NzA4M30.k643d5gVS2uWWe_QgSvAMjWVuRgBIU2wI0bR38vYDCc';
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let activeSeason = null;
+    let openSeasons = [];
+    let selectedSeason = null;
     let currentStep = 1;
+
+    // Phone formatter
+    function formatPhone(input) {
+      let value = input.value.replace(/\D/g, '');
+      if (value.length > 10) value = value.substring(0, 10);
+      if (value.length > 6) {
+        value = value.substring(0, 3) + '-' + value.substring(3, 6) + '-' + value.substring(6);
+      } else if (value.length > 3) {
+        value = value.substring(0, 3) + '-' + value.substring(3);
+      }
+      input.value = value;
+    }
 
     async function init() {
       try {
+        // Fetch seasons with registration_open = true
         const { data: seasons, error } = await db
           .from('seasons')
           .select('*')
-          .eq('status', 'active')
-          .limit(1);
+          .eq('registration_open', true)
+          .order('created_at', { ascending: false });
 
         if (error) throw error;
 
-        if (!seasons || seasons.length === 0) {
-          document.getElementById('loading').classList.add('hidden');
-          document.getElementById('no-season').classList.remove('hidden');
-          return;
-        }
-
-        activeSeason = seasons[0];
-        document.getElementById('season-name').textContent = activeSeason.name;
-        document.getElementById('success-season-name').textContent = activeSeason.name;
+        openSeasons = seasons || [];
 
         document.getElementById('loading').classList.add('hidden');
-        document.getElementById('form-container').classList.remove('hidden');
-        updateStepDots();
+
+        if (openSeasons.length === 0) {
+          // No seasons open for registration
+          document.getElementById('no-season').classList.remove('hidden');
+        } else if (openSeasons.length === 1) {
+          // Only one season - go straight to form
+          selectSeason(openSeasons[0]);
+        } else {
+          // Multiple seasons - show selector
+          showSeasonSelector();
+        }
 
       } catch (error) {
         console.error('Error:', error);
         document.getElementById('loading').innerHTML = '<div class="text-center"><p class="text-red-500">Failed to load registration.</p><p class="text-gray-400 mt-2">' + error.message + '</p></div>';
       }
+    }
+
+    function showSeasonSelector() {
+      const container = document.getElementById('season-buttons');
+      container.innerHTML = '';
+      
+      openSeasons.forEach(season => {
+        const statusLabel = season.status === 'active' ? 'In Progress' : 
+                          season.status === 'upcoming' ? 'Upcoming' : 'Completed';
+        const statusColor = season.status === 'active' ? 'bg-green-500' : 
+                          season.status === 'upcoming' ? 'bg-blue-500' : 'bg-gray-500';
+        
+        const btn = document.createElement('button');
+        btn.className = 'w-full bg-card border border-border rounded-xl p-4 text-left hover:border-gold transition-colors';
+        btn.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="font-bold text-lg">${season.name}</p>
+              <span class="inline-block ${statusColor} text-white text-xs px-2 py-1 rounded mt-1">${statusLabel}</span>
+            </div>
+            <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </div>
+        `;
+        btn.onclick = () => selectSeason(season);
+        container.appendChild(btn);
+      });
+      
+      document.getElementById('season-selector').classList.remove('hidden');
+    }
+
+    function selectSeason(season) {
+      selectedSeason = season;
+      document.getElementById('season-name').textContent = season.name;
+      document.getElementById('success-season-name').textContent = season.name;
+      
+      // Show "change season" button if multiple seasons
+      if (openSeasons.length > 1) {
+        document.getElementById('change-season-btn').classList.remove('hidden');
+      }
+      
+      document.getElementById('season-selector').classList.add('hidden');
+      document.getElementById('form-container').classList.remove('hidden');
+      updateStepDots();
+    }
+
+    function backToSeasonSelect() {
+      document.getElementById('form-container').classList.add('hidden');
+      showSeasonSelector();
+      resetForm();
+    }
+
+    function registerAnother() {
+      document.getElementById('success').classList.add('hidden');
+      resetForm();
+      
+      if (openSeasons.length > 1) {
+        showSeasonSelector();
+      } else {
+        document.getElementById('form-container').classList.remove('hidden');
+        updateStepDots();
+      }
+    }
+
+    function resetForm() {
+      currentStep = 1;
+      document.querySelectorAll('input, textarea, select').forEach(el => {
+        if (el.type === 'checkbox') {
+          el.checked = false;
+        } else if (el.tagName === 'SELECT') {
+          el.selectedIndex = 0;
+        } else {
+          el.value = '';
+        }
+      });
+      document.getElementById('state').value = 'TX';
+      
+      // Reset step visibility
+      for (let i = 1; i <= 5; i++) {
+        document.getElementById('step-' + i).classList.add('hidden');
+      }
+      document.getElementById('step-1').classList.remove('hidden');
+      updateStepDots();
     }
 
     function updateStepDots() {
@@ -532,7 +672,7 @@
     function validateStep(step) {
       const validations = {
         1: ['first_name', 'last_name', 'dob', 'grade', 'school', 'player_type'],
-        2: ['parent_name', 'parent_phone', 'parent_email', 'address'],
+        2: ['parent_name', 'parent_phone', 'parent_email', 'street', 'city', 'state', 'zip'],
         3: ['emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation'],
         4: ['experience_level', 'uniform_size_jersey', 'uniform_size_shorts'],
         5: ['waiver_liability', 'waiver_conduct', 'waiver_signed_by']
@@ -575,6 +715,14 @@
       window.scrollTo(0, 0);
     }
 
+    function getFullAddress() {
+      const street = document.getElementById('street').value.trim();
+      const city = document.getElementById('city').value.trim();
+      const state = document.getElementById('state').value;
+      const zip = document.getElementById('zip').value.trim();
+      return [street, city, state, zip].filter(Boolean).join(', ');
+    }
+
     async function submitRegistration() {
       if (!validateStep(5)) return;
 
@@ -584,7 +732,7 @@
 
       try {
         const playerData = {
-          season_id: activeSeason.id,
+          season_id: selectedSeason.id,
           first_name: document.getElementById('first_name').value.trim(),
           last_name: document.getElementById('last_name').value.trim(),
           dob: document.getElementById('dob').value,
@@ -595,7 +743,7 @@
           parent_name: document.getElementById('parent_name').value.trim(),
           parent_phone: document.getElementById('parent_phone').value.trim(),
           parent_email: document.getElementById('parent_email').value.trim(),
-          address: document.getElementById('address').value.trim(),
+          address: getFullAddress(),
           parent_2_name: document.getElementById('parent_2_name').value.trim() || null,
           parent_2_phone: document.getElementById('parent_2_phone').value.trim() || null,
           parent_2_email: document.getElementById('parent_2_email').value.trim() || null,
@@ -632,11 +780,11 @@
         if (playerError) throw playerError;
 
         const payments = [
-          { season_id: activeSeason.id, player_id: player.id, fee_type: 'registration', amount: activeSeason.fee_registration || 150, paid: false },
-          { season_id: activeSeason.id, player_id: player.id, fee_type: 'uniform', amount: activeSeason.fee_uniform || 35, paid: false },
-          { season_id: activeSeason.id, player_id: player.id, fee_type: 'monthly_1', amount: activeSeason.fee_monthly || 50, paid: false },
-          { season_id: activeSeason.id, player_id: player.id, fee_type: 'monthly_2', amount: activeSeason.fee_monthly || 50, paid: false },
-          { season_id: activeSeason.id, player_id: player.id, fee_type: 'monthly_3', amount: activeSeason.fee_monthly || 50, paid: false },
+          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'registration', amount: selectedSeason.fee_registration || 150, paid: false },
+          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'uniform', amount: selectedSeason.fee_uniform || 35, paid: false },
+          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'monthly_1', amount: selectedSeason.fee_monthly || 50, paid: false },
+          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'monthly_2', amount: selectedSeason.fee_monthly || 50, paid: false },
+          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'monthly_3', amount: selectedSeason.fee_monthly || 50, paid: false },
         ];
 
         const { error: paymentsError } = await db

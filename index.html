@@ -49,7 +49,7 @@
   <!-- No Season State -->
   <div id="no-season" class="min-h-screen flex items-center justify-center p-4 hidden">
     <div class="text-center">
-      <div class="text-6xl mb-4">⚠️</div>
+      <div class="text-6xl mb-4">&#9888;</div>
       <h1 class="text-2xl font-bold mb-2">Registration Closed</h1>
       <p class="text-gray-400">There is no active season for registration at this time.</p>
       <p class="text-gray-400 mt-2">Please contact your coach for more information.</p>
@@ -335,7 +335,7 @@
               <select id="experience_level" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
                 <option value="">Select Level</option>
                 <option value="none">No Experience</option>
-                <option value="beginner">Beginner (< 1 year)</option>
+                <option value="beginner">Beginner (less than 1 year)</option>
                 <option value="intermediate">Intermediate (1-2 years)</option>
                 <option value="advanced">Advanced (3+ years)</option>
                 <option value="club">Club Experience</option>
@@ -480,18 +480,15 @@
   </div>
 
   <script>
-    // Supabase client
     const SUPABASE_URL = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU2MjI0MDIsImV4cCI6MjA1MTE5ODQwMn0.f0Bvs8rSz-C6BwBI95zVa8xpigp3ySLGurMsZDxxVHA';
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let activeSeason = null;
     let currentStep = 1;
 
-    // Initialize
     async function init() {
       try {
-        // Fetch active season
         const { data: seasons, error } = await db
           .from('seasons')
           .select('*')
@@ -516,11 +513,10 @@
 
       } catch (error) {
         console.error('Error:', error);
-        alert('Failed to load registration. Please try again.');
+        document.getElementById('loading').innerHTML = '<div class="text-center"><p class="text-red-500">Failed to load registration.</p><p class="text-gray-400 mt-2">' + error.message + '</p></div>';
       }
     }
 
-    // Step navigation
     function updateStepDots() {
       document.querySelectorAll('.step-dot').forEach(dot => {
         const step = parseInt(dot.dataset.step);
@@ -564,23 +560,21 @@
 
     function nextStep(step) {
       if (!validateStep(step)) return;
-      
-      document.getElementById(`step-${step}`).classList.add('hidden');
-      document.getElementById(`step-${step + 1}`).classList.remove('hidden');
+      document.getElementById('step-' + step).classList.add('hidden');
+      document.getElementById('step-' + (step + 1)).classList.remove('hidden');
       currentStep = step + 1;
       updateStepDots();
       window.scrollTo(0, 0);
     }
 
     function prevStep(step) {
-      document.getElementById(`step-${step}`).classList.add('hidden');
-      document.getElementById(`step-${step - 1}`).classList.remove('hidden');
+      document.getElementById('step-' + step).classList.add('hidden');
+      document.getElementById('step-' + (step - 1)).classList.remove('hidden');
       currentStep = step - 1;
       updateStepDots();
       window.scrollTo(0, 0);
     }
 
-    // Submit registration
     async function submitRegistration() {
       if (!validateStep(5)) return;
 
@@ -589,7 +583,6 @@
       btn.textContent = 'Submitting...';
 
       try {
-        // Gather all form data
         const playerData = {
           season_id: activeSeason.id,
           first_name: document.getElementById('first_name').value.trim(),
@@ -599,7 +592,6 @@
           school: document.getElementById('school').value.trim(),
           player_type: document.getElementById('player_type').value,
           status: 'new',
-          
           parent_name: document.getElementById('parent_name').value.trim(),
           parent_phone: document.getElementById('parent_phone').value.trim(),
           parent_email: document.getElementById('parent_email').value.trim(),
@@ -607,38 +599,30 @@
           parent_2_name: document.getElementById('parent_2_name').value.trim() || null,
           parent_2_phone: document.getElementById('parent_2_phone').value.trim() || null,
           parent_2_email: document.getElementById('parent_2_email').value.trim() || null,
-          
           emergency_contact_name: document.getElementById('emergency_contact_name').value.trim(),
           emergency_contact_phone: document.getElementById('emergency_contact_phone').value.trim(),
           emergency_contact_relation: document.getElementById('emergency_contact_relation').value.trim(),
-          
           medical_conditions: document.getElementById('medical_conditions').value.trim() || null,
           allergies: document.getElementById('allergies').value.trim() || null,
           medications: document.getElementById('medications').value.trim() || null,
-          
           position: document.getElementById('position').value || null,
           experience_level: document.getElementById('experience_level').value,
           experience_details: document.getElementById('experience_details').value.trim() || null,
           goals: document.getElementById('goals').value.trim() || null,
-          
           jersey_pref_1: document.getElementById('jersey_pref_1').value ? parseInt(document.getElementById('jersey_pref_1').value) : null,
           jersey_pref_2: document.getElementById('jersey_pref_2').value ? parseInt(document.getElementById('jersey_pref_2').value) : null,
           jersey_pref_3: document.getElementById('jersey_pref_3').value ? parseInt(document.getElementById('jersey_pref_3').value) : null,
-          
           uniform_size_jersey: document.getElementById('uniform_size_jersey').value,
           uniform_size_shorts: document.getElementById('uniform_size_shorts').value,
-          
           waiver_liability: document.getElementById('waiver_liability').checked,
           waiver_photo: document.getElementById('waiver_photo').checked,
           waiver_conduct: document.getElementById('waiver_conduct').checked,
           waiver_signed_by: document.getElementById('waiver_signed_by').value.trim(),
           waiver_signed_date: new Date().toISOString(),
-          
           registration_source: 'web',
           registration_date: new Date().toISOString(),
         };
 
-        // Insert player
         const { data: player, error: playerError } = await db
           .from('players')
           .insert(playerData)
@@ -647,7 +631,6 @@
 
         if (playerError) throw playerError;
 
-        // Create payment records
         const payments = [
           { season_id: activeSeason.id, player_id: player.id, fee_type: 'registration', amount: activeSeason.fee_registration || 150, paid: false },
           { season_id: activeSeason.id, player_id: player.id, fee_type: 'uniform', amount: activeSeason.fee_uniform || 35, paid: false },
@@ -662,7 +645,6 @@
 
         if (paymentsError) throw paymentsError;
 
-        // Show success
         document.getElementById('form-container').classList.add('hidden');
         document.getElementById('success').classList.remove('hidden');
         window.scrollTo(0, 0);
@@ -675,6 +657,8 @@
       }
     }
 
-    // Start
     init();
   </script>
+
+</body>
+</html>

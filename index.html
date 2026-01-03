@@ -130,9 +130,11 @@
   </div>
 
   <!-- Success State -->
-  <div id="success" class="min-h-screen flex items-center justify-center p-4 hidden">
-    <div class="max-w-md w-full">
-      <div class="text-center mb-8">
+  <div id="success" class="min-h-screen p-4 hidden">
+    <div class="max-w-md mx-auto py-8">
+      
+      <!-- Success Header -->
+      <div class="text-center mb-6">
         <div class="w-20 h-20 bg-success rounded-full flex items-center justify-center mx-auto mb-4">
           <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
@@ -150,7 +152,99 @@
         </div>
       </div>
       
-      <div class="bg-card rounded-2xl p-6 mb-6">
+      <!-- Account Creation Section -->
+      <div id="account-creation-section" class="bg-card rounded-2xl p-6 mb-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 bg-gold rounded-full flex items-center justify-center">
+            <svg class="w-5 h-5 text-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold">Create Your Account</h2>
+            <p class="text-sm text-gray-400">Manage everything in the VolleyBrain app</p>
+          </div>
+        </div>
+        
+        <!-- Account Form -->
+        <div id="account-form" class="space-y-4">
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Email</label>
+            <input type="email" id="account_email" class="w-full bg-dark border border-border rounded-xl p-4 text-white" readonly>
+          </div>
+          
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Phone</label>
+            <input type="tel" id="account_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" readonly>
+          </div>
+          
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Create Password *</label>
+            <input type="password" id="account_password" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Minimum 8 characters">
+          </div>
+          
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Confirm Password *</label>
+            <input type="password" id="account_password_confirm" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Re-enter password">
+          </div>
+          
+          <!-- Player Accounts Section -->
+          <div id="player-accounts-section" class="border-t border-border pt-4 mt-4">
+            <div class="flex items-start gap-3 mb-4">
+              <input type="checkbox" id="create_player_accounts" class="mt-1" onchange="togglePlayerAccountOptions()">
+              <div>
+                <label for="create_player_accounts" class="font-medium cursor-pointer">Create accounts for my players</label>
+                <p class="text-sm text-gray-400">Players can view schedules and team info (COPPA compliant)</p>
+              </div>
+            </div>
+            
+            <div id="player-account-options" class="hidden space-y-3 ml-8">
+              <!-- Will be populated dynamically -->
+            </div>
+          </div>
+          
+          <button onclick="createAccount()" id="create-account-btn" class="w-full bg-gold text-dark font-bold py-4 rounded-xl mt-4">
+            Create Account
+          </button>
+          
+          <button onclick="skipAccountCreation()" class="w-full text-gray-400 text-sm py-2">
+            Maybe Later
+          </button>
+        </div>
+        
+        <!-- Account Created State -->
+        <div id="account-created" class="hidden">
+          <div class="bg-success/20 border border-success/30 rounded-xl p-4 flex items-center gap-3">
+            <div class="w-10 h-10 bg-success rounded-full flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-success">Account Created!</p>
+              <p class="text-sm text-gray-400">Download the app to sign in</p>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 mt-4">
+            <a href="#" class="flex-1 bg-dark border border-border rounded-xl p-3 flex items-center justify-center gap-2">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+              </svg>
+              <span class="text-sm">App Store</span>
+            </a>
+            <a href="#" class="flex-1 bg-dark border border-border rounded-xl p-3 flex items-center justify-center gap-2">
+              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3.18 23.71c-.55-.31-.89-.89-.89-1.53V1.82c0-.64.34-1.22.89-1.53l11.06 11.71L3.18 23.71zm15.6-8.93l-3.38-3.59 3.38-3.59 3.83 2.15c.68.38.68 1.36 0 1.74l-3.83 2.15v1.14zm-4.76-3.59l-10.31 10.94 14.25-8.01-3.94-2.93zm0-1.38L10.08 6.88l-6.97-3.92 10.91 10.85z"/>
+              </svg>
+              <span class="text-sm">Google Play</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Payment Info Section -->
+      <div id="payment-section" class="bg-card rounded-2xl p-6 mb-6">
         <h2 class="text-lg font-bold mb-4 text-gold">Payment Information</h2>
         <div id="payment-breakdown" class="space-y-3 text-sm">
           <!-- Will be populated dynamically -->
@@ -171,7 +265,7 @@
             <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">Z</div>
             <div>
               <p class="font-medium">Zelle</p>
-              <p class="text-gold"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5020312910323c31333b383f223e3524237e333f3d">[email&#160;protected]</a></p>
+              <p class="text-gold">payments@blackhornets.com</p>
             </div>
           </div>
           <div class="flex items-center gap-3">
@@ -1394,6 +1488,12 @@
     }
 
     function showSuccessScreen(createdPlayers) {
+      // Store for account creation
+      window.registeredPlayers = createdPlayers;
+      window.registrationEmail = document.getElementById('parent_email').value.trim();
+      window.registrationPhone = document.getElementById('parent_phone').value.trim();
+      window.registrationFamilyId = createdPlayers[0]?.family_id;
+      
       // Update registered players list
       const playersList = document.getElementById('registered-players-list');
       playersList.innerHTML = createdPlayers.map(p => `
@@ -1406,6 +1506,27 @@
           <div>
             <p class="font-medium">${p.first_name} ${p.last_name}</p>
             <p class="text-sm text-gray-400">Grade ${p.grade} &bull; ${p.player_type === 'returning' ? 'Returning' : 'New'}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Pre-fill account creation fields
+      document.getElementById('account_email').value = window.registrationEmail;
+      document.getElementById('account_phone').value = window.registrationPhone;
+      
+      // Populate player account options
+      const playerAccountOptions = document.getElementById('player-account-options');
+      playerAccountOptions.innerHTML = createdPlayers.map((p, i) => `
+        <div class="bg-dark rounded-lg p-3">
+          <div class="flex items-center gap-3 mb-2">
+            <input type="checkbox" id="player_account_${i}" data-player-id="${p.id}" class="player-account-checkbox" checked>
+            <label for="player_account_${i}" class="font-medium cursor-pointer">${p.first_name} ${p.last_name}</label>
+          </div>
+          <div class="ml-7">
+            <label class="block text-xs text-gray-400 mb-1">PIN (4 digits)</label>
+            <input type="password" id="player_pin_${i}" maxlength="4" pattern="[0-9]{4}" 
+              class="w-24 bg-card border border-border rounded-lg p-2 text-white text-center tracking-widest"
+              placeholder="****" inputmode="numeric">
           </div>
         </div>
       `).join('');
@@ -1446,6 +1567,113 @@
       document.getElementById('form-container').classList.add('hidden');
       document.getElementById('success').classList.remove('hidden');
       window.scrollTo(0, 0);
+    }
+
+    // Toggle player account options visibility
+    function togglePlayerAccountOptions() {
+      const checkbox = document.getElementById('create_player_accounts');
+      const options = document.getElementById('player-account-options');
+      if (checkbox.checked) {
+        options.classList.remove('hidden');
+      } else {
+        options.classList.add('hidden');
+      }
+    }
+
+    // Skip account creation
+    function skipAccountCreation() {
+      document.getElementById('account-creation-section').classList.add('hidden');
+    }
+
+    // Create account
+    async function createAccount() {
+      const email = window.registrationEmail;
+      const password = document.getElementById('account_password').value;
+      const passwordConfirm = document.getElementById('account_password_confirm').value;
+      
+      // Validation
+      if (!password || password.length < 8) {
+        alert('Password must be at least 8 characters.');
+        return;
+      }
+      
+      if (password !== passwordConfirm) {
+        alert('Passwords do not match.');
+        return;
+      }
+      
+      const btn = document.getElementById('create-account-btn');
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+      
+      try {
+        // Create auth user with Supabase
+        const { data: authData, error: authError } = await db.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              full_name: document.getElementById('parent_name').value.trim(),
+              phone: window.registrationPhone,
+              family_id: window.registrationFamilyId,
+              role: 'parent'
+            }
+          }
+        });
+        
+        if (authError) throw authError;
+        
+        // Create profile record
+        const profileData = {
+          id: authData.user.id,
+          email: email,
+          phone: window.registrationPhone,
+          full_name: document.getElementById('parent_name').value.trim(),
+          family_id: window.registrationFamilyId,
+          role: 'parent',
+          created_at: new Date().toISOString()
+        };
+        
+        const { error: profileError } = await db.from('profiles').insert(profileData);
+        if (profileError) console.warn('Profile creation note:', profileError.message);
+        
+        // Update family with account linkage
+        await db.from('families').update({ 
+          account_id: authData.user.id,
+          updated_at: new Date().toISOString()
+        }).eq('id', window.registrationFamilyId);
+        
+        // Create player accounts if selected
+        const createPlayerAccounts = document.getElementById('create_player_accounts').checked;
+        if (createPlayerAccounts) {
+          const checkboxes = document.querySelectorAll('.player-account-checkbox:checked');
+          for (let i = 0; i < checkboxes.length; i++) {
+            const checkbox = checkboxes[i];
+            const playerId = checkbox.dataset.playerId;
+            const pinInput = document.getElementById(`player_pin_${i}`);
+            const pin = pinInput ? pinInput.value : '';
+            
+            if (pin && pin.length === 4) {
+              // Update player with PIN for player account access
+              await db.from('players').update({
+                player_pin: pin,
+                player_account_enabled: true,
+                parent_account_id: authData.user.id
+              }).eq('id', playerId);
+            }
+          }
+        }
+        
+        // Show success state
+        document.getElementById('account-form').classList.add('hidden');
+        document.getElementById('account-created').classList.remove('hidden');
+        
+      } catch (error) {
+        console.error('Account creation error:', error);
+        alert('Account creation failed: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
     }
 
     init();

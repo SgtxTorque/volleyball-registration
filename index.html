@@ -18,6 +18,7 @@
             success: '#34C759',
             warning: '#FF9500',
             danger: '#FF3B30',
+            info: '#5AC8FA',
           }
         }
       }
@@ -35,19 +36,32 @@
     .step-dot.active { background-color: #FFD700; }
     .step-dot.completed { background-color: #34C759; }
     
-    /* Tap to Sign button animation */
-    .sign-btn {
-      transition: all 0.3s ease;
-    }
-    .sign-btn:active {
-      transform: scale(0.98);
-    }
-    .signed-container {
-      animation: fadeIn 0.3s ease;
-    }
+    .sign-btn { transition: all 0.3s ease; }
+    .sign-btn:active { transform: scale(0.98); }
+    .signed-container { animation: fadeIn 0.3s ease; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-10px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .player-tab.active {
+      background-color: #FFD700;
+      color: #0a0a0a;
+    }
+    
+    .player-card {
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .remove-player-btn {
+      transition: all 0.2s ease;
+    }
+    .remove-player-btn:hover {
+      background-color: #FF3B30;
     }
   </style>
 </head>
@@ -101,25 +115,18 @@
         <p class="text-gray-400">Welcome to <span id="success-season-name">the team</span>!</p>
       </div>
       
+      <!-- Registered Players Summary -->
+      <div id="registered-players-summary" class="bg-card rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4 text-gold">Players Registered</h2>
+        <div id="registered-players-list" class="space-y-2">
+          <!-- Will be populated dynamically -->
+        </div>
+      </div>
+      
       <div class="bg-card rounded-2xl p-6 mb-6">
         <h2 class="text-lg font-bold mb-4 text-gold">Payment Information</h2>
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-400">Registration Fee</span>
-            <span>$150</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Uniform Fee</span>
-            <span>$35</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-400">Monthly Fees (3 months)</span>
-            <span>$150</span>
-          </div>
-          <div class="border-t border-border pt-3 flex justify-between font-bold">
-            <span>Total</span>
-            <span class="text-gold">$335</span>
-          </div>
+        <div id="payment-breakdown" class="space-y-3 text-sm">
+          <!-- Will be populated dynamically -->
         </div>
       </div>
 
@@ -137,7 +144,7 @@
             <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">Z</div>
             <div>
               <p class="font-medium">Zelle</p>
-              <p class="text-gold">pay@blackhornets.com</p>
+              <p class="text-gold"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5020312910323c31333b383f223e3524237e333f3d">[email&#160;protected]</a></p>
             </div>
           </div>
           <div class="flex items-center gap-3">
@@ -148,7 +155,7 @@
             </div>
           </div>
         </div>
-        <p class="text-gray-400 text-sm mt-4">Please include player name in payment memo.</p>
+        <p class="text-gray-400 text-sm mt-4">Please include player name(s) in payment memo.</p>
       </div>
 
       <p class="text-center text-gray-400 text-sm mt-6">Your coach will be in touch soon with next steps!</p>
@@ -179,54 +186,22 @@
         <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="5"></div>
       </div>
 
-      <!-- Step 1: Player Info -->
+      <!-- Step 1: Players -->
       <div id="step-1" class="step-content">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Player Information</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 1 of 5</p>
+          <p class="text-gray-400 text-sm mb-6">Step 1 of 5 • Add all children you want to register</p>
           
-          <div class="space-y-4">
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">First Name *</label>
-                <input type="text" id="first_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-              </div>
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">Last Name *</label>
-                <input type="text" id="last_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-              </div>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Date of Birth *</label>
-              <input type="date" id="dob" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Grade (Fall 2025) *</label>
-              <select id="grade" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-                <option value="">Select Grade</option>
-                <option value="5">5th Grade</option>
-                <option value="6">6th Grade</option>
-                <option value="7">7th Grade</option>
-                <option value="8">8th Grade</option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">School *</label>
-              <input type="text" id="school" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Player Type *</label>
-              <select id="player_type" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-                <option value="">Select Type</option>
-                <option value="new">New Player</option>
-                <option value="returning">Returning Player</option>
-              </select>
-            </div>
+          <div id="players-container" class="space-y-4">
+            <!-- Player cards will be inserted here -->
           </div>
+          
+          <button onclick="addPlayer()" id="add-player-btn" class="w-full bg-dark border-2 border-dashed border-border text-gray-400 font-medium py-4 rounded-xl mt-4 flex items-center justify-center gap-2 hover:border-gold hover:text-gold transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Add Another Child
+          </button>
         </div>
         
         <button onclick="nextStep(1)" class="w-full bg-gold text-dark font-bold py-4 rounded-xl mt-6">
@@ -238,7 +213,7 @@
       <div id="step-2" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Parent/Guardian Information</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 2 of 5</p>
+          <p class="text-gray-400 text-sm mb-6">Step 2 of 5 • This applies to all players</p>
           
           <div class="space-y-4">
             <div>
@@ -314,15 +289,13 @@
         </div>
       </div>
 
-      <!-- Step 3: Emergency & Medical -->
+      <!-- Step 3: Emergency Contact -->
       <div id="step-3" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
-          <h2 class="text-lg font-bold mb-1">Emergency Contact & Medical</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 3 of 5</p>
+          <h2 class="text-lg font-bold mb-1">Emergency Contact</h2>
+          <p class="text-gray-400 text-sm mb-6">Step 3 of 5 • Contact other than parent/guardian</p>
           
           <div class="space-y-4">
-            <p class="text-sm text-gold">Emergency Contact (other than parent)</p>
-            
             <div>
               <label class="block text-sm text-gray-400 mb-2">Contact Name *</label>
               <input type="text" id="emergency_contact_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
@@ -337,25 +310,6 @@
               <label class="block text-sm text-gray-400 mb-2">Relationship *</label>
               <input type="text" id="emergency_contact_relation" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="e.g., Grandparent, Aunt, Uncle" required>
             </div>
-            
-            <div class="border-t border-border pt-4 mt-4">
-              <p class="text-sm text-gold mb-4">Medical Information</p>
-              
-              <div class="space-y-4">
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">Medical Conditions</label>
-                  <textarea id="medical_conditions" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="List any medical conditions or write 'None'"></textarea>
-                </div>
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">Allergies</label>
-                  <textarea id="allergies" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="List any allergies or write 'None'"></textarea>
-                </div>
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">Current Medications</label>
-                  <textarea id="medications" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="List any medications or write 'None'"></textarea>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
         
@@ -369,99 +323,20 @@
         </div>
       </div>
 
-      <!-- Step 4: Volleyball Details -->
+      <!-- Step 4: Player Details (Medical, Volleyball, Uniform per player) -->
       <div id="step-4" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
-          <h2 class="text-lg font-bold mb-1">Volleyball Details</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 4 of 5</p>
+          <h2 class="text-lg font-bold mb-1">Player Details</h2>
+          <p class="text-gray-400 text-sm mb-4">Step 4 of 5 • Medical, volleyball & uniform info</p>
           
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Preferred Position</label>
-              <select id="position" class="w-full bg-dark border border-border rounded-xl p-4 text-white">
-                <option value="">No Preference</option>
-                <option value="OH">Outside Hitter (OH)</option>
-                <option value="S">Setter (S)</option>
-                <option value="MB">Middle Blocker (MB)</option>
-                <option value="OPP">Opposite (OPP)</option>
-                <option value="L">Libero (L)</option>
-                <option value="DS">Defensive Specialist (DS)</option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Experience Level *</label>
-              <select id="experience_level" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-                <option value="">Select Level</option>
-                <option value="none">No Experience</option>
-                <option value="beginner">Beginner (less than 1 year)</option>
-                <option value="intermediate">Intermediate (1-2 years)</option>
-                <option value="advanced">Advanced (3+ years)</option>
-                <option value="club">Club Experience</option>
-              </select>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Experience Details</label>
-              <textarea id="experience_details" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="Previous teams, camps, training..."></textarea>
-            </div>
-            
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Goals for This Season</label>
-              <textarea id="goals" class="w-full bg-dark border border-border rounded-xl p-4 text-white h-24" placeholder="What do you hope to achieve?"></textarea>
-            </div>
-            
-            <div class="border-t border-border pt-4 mt-4">
-              <p class="text-sm text-gold mb-4">Jersey Preferences</p>
-              
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">1st Choice</label>
-                  <input type="number" id="jersey_pref_1" class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
-                </div>
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">2nd Choice</label>
-                  <input type="number" id="jersey_pref_2" class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
-                </div>
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">3rd Choice</label>
-                  <input type="number" id="jersey_pref_3" class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
-                </div>
-              </div>
-            </div>
-            
-            <div class="border-t border-border pt-4 mt-4">
-              <p class="text-sm text-gold mb-4">Uniform Sizes</p>
-              
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">Jersey Size *</label>
-                  <select id="uniform_size_jersey" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-                    <option value="">Select Size</option>
-                    <option value="YS">Youth Small</option>
-                    <option value="YM">Youth Medium</option>
-                    <option value="YL">Youth Large</option>
-                    <option value="AS">Adult Small</option>
-                    <option value="AM">Adult Medium</option>
-                    <option value="AL">Adult Large</option>
-                    <option value="AXL">Adult XL</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm text-gray-400 mb-2">Shorts Size *</label>
-                  <select id="uniform_size_shorts" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
-                    <option value="">Select Size</option>
-                    <option value="YS">Youth Small</option>
-                    <option value="YM">Youth Medium</option>
-                    <option value="YL">Youth Large</option>
-                    <option value="AS">Adult Small</option>
-                    <option value="AM">Adult Medium</option>
-                    <option value="AL">Adult Large</option>
-                    <option value="AXL">Adult XL</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+          <!-- Player Tabs -->
+          <div id="player-tabs" class="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <!-- Tabs generated dynamically -->
+          </div>
+          
+          <!-- Player Detail Sections -->
+          <div id="player-details-container">
+            <!-- Generated dynamically -->
           </div>
         </div>
         
@@ -479,7 +354,15 @@
       <div id="step-5" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Waivers & Agreement</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 5 of 5</p>
+          <p class="text-gray-400 text-sm mb-6">Step 5 of 5 • Applies to all registered players</p>
+          
+          <!-- Players being registered summary -->
+          <div class="bg-dark rounded-xl p-4 mb-6">
+            <p class="text-sm text-gold mb-2">Registering:</p>
+            <div id="waiver-players-list" class="space-y-1">
+              <!-- Generated dynamically -->
+            </div>
+          </div>
           
           <div class="space-y-6">
             <div class="bg-dark rounded-xl p-4">
@@ -497,7 +380,7 @@
                 <input type="checkbox" id="waiver_photo" class="mt-1 w-5 h-5 rounded">
                 <div>
                   <label for="waiver_photo" class="font-medium">Photo/Video Release</label>
-                  <p class="text-sm text-gray-400 mt-1">I grant permission to photograph and/or video record my child for use in promotional materials, social media, and team communications.</p>
+                  <p class="text-sm text-gray-400 mt-1">I grant permission to photograph and/or video record my child(ren) for use in promotional materials, social media, and team communications.</p>
                 </div>
               </div>
             </div>
@@ -507,7 +390,7 @@
                 <input type="checkbox" id="waiver_conduct" class="mt-1 w-5 h-5 rounded" required>
                 <div>
                   <label for="waiver_conduct" class="font-medium">Code of Conduct *</label>
-                  <p class="text-sm text-gray-400 mt-1">I agree that my child and our family will demonstrate good sportsmanship, respect coaches and officials, and follow all team rules and policies.</p>
+                  <p class="text-sm text-gray-400 mt-1">I agree that my child(ren) and our family will demonstrate good sportsmanship, respect coaches and officials, and follow all team rules and policies.</p>
                 </div>
               </div>
             </div>
@@ -520,7 +403,7 @@
               <div id="unsigned-container">
                 <div class="bg-dark rounded-xl p-4 mb-4">
                   <p class="text-sm text-gray-300 leading-relaxed">
-                    By signing below, I acknowledge that I have read and agree to all waivers above. 
+                    By signing below, I acknowledge that I have read and agree to all waivers above for all players listed. 
                     I certify that all information provided in this registration is accurate and complete to the best of my knowledge.
                   </p>
                 </div>
@@ -585,7 +468,7 @@
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     const SUPABASE_URL = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTEwODMsImV4cCI6MjA4Mjc4NzA4M30.k643d5gVS2uWWe_QgSvAMjWVuRgBIU2wI0bR38vYDCc';
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -594,6 +477,19 @@
     let selectedSeason = null;
     let currentStep = 1;
     let isSigned = false;
+    
+    // Multi-player support
+    let players = [];
+    let activePlayerIndex = 0;
+
+    // Generate UUID for family_id
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
 
     // Phone formatter
     function formatPhone(input) {
@@ -605,6 +501,434 @@
         value = value.substring(0, 3) + '-' + value.substring(3);
       }
       input.value = value;
+    }
+
+    // Initialize with one player
+    function initPlayers() {
+      players = [{
+        first_name: '',
+        last_name: '',
+        dob: '',
+        grade: '',
+        school: '',
+        player_type: '',
+        medical_conditions: '',
+        allergies: '',
+        medications: '',
+        position: '',
+        experience_level: '',
+        experience_details: '',
+        goals: '',
+        jersey_pref_1: '',
+        jersey_pref_2: '',
+        jersey_pref_3: '',
+        uniform_size_jersey: '',
+        uniform_size_shorts: '',
+      }];
+      renderPlayerCards();
+    }
+
+    // Add a new player
+    function addPlayer() {
+      players.push({
+        first_name: '',
+        last_name: '',
+        dob: '',
+        grade: '',
+        school: '',
+        player_type: '',
+        medical_conditions: '',
+        allergies: '',
+        medications: '',
+        position: '',
+        experience_level: '',
+        experience_details: '',
+        goals: '',
+        jersey_pref_1: '',
+        jersey_pref_2: '',
+        jersey_pref_3: '',
+        uniform_size_jersey: '',
+        uniform_size_shorts: '',
+      });
+      renderPlayerCards();
+      
+      // Scroll to new player
+      setTimeout(() => {
+        const cards = document.querySelectorAll('.player-card');
+        if (cards.length > 0) {
+          cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+
+    // Remove a player
+    function removePlayer(index) {
+      if (players.length <= 1) {
+        alert('You must register at least one player.');
+        return;
+      }
+      players.splice(index, 1);
+      if (activePlayerIndex >= players.length) {
+        activePlayerIndex = players.length - 1;
+      }
+      renderPlayerCards();
+    }
+
+    // Save player data from card inputs
+    function savePlayerData(index) {
+      const prefix = 'player_' + index + '_';
+      const fields = ['first_name', 'last_name', 'dob', 'grade', 'school', 'player_type'];
+      fields.forEach(field => {
+        const el = document.getElementById(prefix + field);
+        if (el) players[index][field] = el.value;
+      });
+    }
+
+    // Save player details (step 4)
+    function savePlayerDetails(index) {
+      const prefix = 'pd_' + index + '_';
+      const fields = [
+        'medical_conditions', 'allergies', 'medications',
+        'position', 'experience_level', 'experience_details', 'goals',
+        'jersey_pref_1', 'jersey_pref_2', 'jersey_pref_3',
+        'uniform_size_jersey', 'uniform_size_shorts'
+      ];
+      fields.forEach(field => {
+        const el = document.getElementById(prefix + field);
+        if (el) players[index][field] = el.value;
+      });
+    }
+
+    // Render player cards for Step 1
+    function renderPlayerCards() {
+      const container = document.getElementById('players-container');
+      container.innerHTML = '';
+      
+      players.forEach((player, index) => {
+        const card = document.createElement('div');
+        card.className = 'player-card bg-dark rounded-xl p-4 border border-border';
+        card.innerHTML = `
+          <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-gold rounded-full flex items-center justify-center text-dark font-bold text-sm">
+                ${index + 1}
+              </div>
+              <span class="font-medium">Player ${index + 1}</span>
+              ${players.length > 1 ? '<span class="text-xs text-gray-500">(Sibling)</span>' : ''}
+            </div>
+            ${players.length > 1 ? `
+              <button onclick="removePlayer(${index})" class="remove-player-btn w-8 h-8 rounded-full bg-dark border border-border flex items-center justify-center text-gray-400 hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            ` : ''}
+          </div>
+          
+          <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-gray-400 mb-1">First Name *</label>
+                <input type="text" id="player_${index}_first_name" value="${player.first_name}" 
+                  onchange="savePlayerData(${index})"
+                  class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm" required>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-400 mb-1">Last Name *</label>
+                <input type="text" id="player_${index}_last_name" value="${player.last_name}"
+                  onchange="savePlayerData(${index})"
+                  class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm" required>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Date of Birth *</label>
+              <input type="date" id="player_${index}_dob" value="${player.dob}"
+                onchange="savePlayerData(${index})"
+                class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm" required>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-gray-400 mb-1">Grade (Fall 2025) *</label>
+                <select id="player_${index}_grade" onchange="savePlayerData(${index})"
+                  class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm" required>
+                  <option value="">Select</option>
+                  <option value="5" ${player.grade === '5' ? 'selected' : ''}>5th Grade</option>
+                  <option value="6" ${player.grade === '6' ? 'selected' : ''}>6th Grade</option>
+                  <option value="7" ${player.grade === '7' ? 'selected' : ''}>7th Grade</option>
+                  <option value="8" ${player.grade === '8' ? 'selected' : ''}>8th Grade</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs text-gray-400 mb-1">Player Type *</label>
+                <select id="player_${index}_player_type" onchange="savePlayerData(${index})"
+                  class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm" required>
+                  <option value="">Select</option>
+                  <option value="new" ${player.player_type === 'new' ? 'selected' : ''}>New Player</option>
+                  <option value="returning" ${player.player_type === 'returning' ? 'selected' : ''}>Returning</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">School *</label>
+              <input type="text" id="player_${index}_school" value="${player.school}"
+                onchange="savePlayerData(${index})"
+                class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm" required>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      
+      // Update add button text
+      const addBtn = document.getElementById('add-player-btn');
+      if (players.length >= 5) {
+        addBtn.style.display = 'none';
+      } else {
+        addBtn.style.display = 'flex';
+      }
+    }
+
+    // Render player tabs for Step 4
+    function renderPlayerTabs() {
+      const tabsContainer = document.getElementById('player-tabs');
+      tabsContainer.innerHTML = '';
+      
+      players.forEach((player, index) => {
+        const tab = document.createElement('button');
+        tab.className = `player-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${index === activePlayerIndex ? 'active' : 'bg-dark text-gray-400'}`;
+        tab.textContent = player.first_name || 'Player ' + (index + 1);
+        tab.onclick = () => switchPlayerTab(index);
+        tabsContainer.appendChild(tab);
+      });
+    }
+
+    // Switch active player tab in Step 4
+    function switchPlayerTab(index) {
+      // Save current player's details before switching
+      savePlayerDetails(activePlayerIndex);
+      
+      activePlayerIndex = index;
+      renderPlayerTabs();
+      renderPlayerDetailsForm();
+    }
+
+    // Render player details form for Step 4
+    function renderPlayerDetailsForm() {
+      const container = document.getElementById('player-details-container');
+      const player = players[activePlayerIndex];
+      const prefix = 'pd_' + activePlayerIndex + '_';
+      
+      // Check if player has any medical info already
+      const hasMedicalInfo = player.medical_conditions || player.allergies || player.medications;
+      
+      container.innerHTML = `
+        <div class="space-y-6">
+          <!-- Medical Section -->
+          <div>
+            <p class="text-sm text-gold mb-4">Medical Information for ${player.first_name || 'Player ' + (activePlayerIndex + 1)}</p>
+            
+            <!-- Medical Toggle -->
+            <div class="bg-dark rounded-xl p-4">
+              <label class="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" id="${prefix}has_medical" 
+                  class="mt-1 w-5 h-5 rounded" 
+                  onchange="toggleMedicalFields(${activePlayerIndex})"
+                  ${hasMedicalInfo ? 'checked' : ''}>
+                <div>
+                  <span class="font-medium">Does this player have any medical conditions, allergies, or medications we should know about?</span>
+                  <p class="text-sm text-gray-500 mt-1">Check this box to report health information</p>
+                </div>
+              </label>
+            </div>
+            
+            <!-- Medical Fields (hidden by default) -->
+            <div id="${prefix}medical_fields" class="${hasMedicalInfo ? '' : 'hidden'} mt-4">
+              <div class="bg-info/10 border border-info/30 rounded-lg p-3 mb-4 flex items-start gap-2">
+                <svg class="w-5 h-5 text-info flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm text-info">Only fill in what applies — leave other fields blank</p>
+              </div>
+              
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Medical Conditions</label>
+                  <textarea id="${prefix}medical_conditions" 
+                    class="w-full bg-dark border border-border rounded-xl p-4 text-white h-20" 
+                    placeholder="e.g., Asthma, Diabetes">${player.medical_conditions}</textarea>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Allergies</label>
+                  <textarea id="${prefix}allergies" 
+                    class="w-full bg-dark border border-border rounded-xl p-4 text-white h-20" 
+                    placeholder="e.g., Peanuts, Bee stings">${player.allergies}</textarea>
+                </div>
+                <div>
+                  <label class="block text-sm text-gray-400 mb-2">Current Medications</label>
+                  <textarea id="${prefix}medications" 
+                    class="w-full bg-dark border border-border rounded-xl p-4 text-white h-20" 
+                    placeholder="e.g., Inhaler, EpiPen">${player.medications}</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Volleyball Section -->
+          <div class="border-t border-border pt-6">
+            <p class="text-sm text-gold mb-4">Volleyball Experience</p>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Preferred Position</label>
+                <select id="${prefix}position" class="w-full bg-dark border border-border rounded-xl p-4 text-white">
+                  <option value="">No Preference</option>
+                  <option value="OH" ${player.position === 'OH' ? 'selected' : ''}>Outside Hitter (OH)</option>
+                  <option value="S" ${player.position === 'S' ? 'selected' : ''}>Setter (S)</option>
+                  <option value="MB" ${player.position === 'MB' ? 'selected' : ''}>Middle Blocker (MB)</option>
+                  <option value="OPP" ${player.position === 'OPP' ? 'selected' : ''}>Opposite (OPP)</option>
+                  <option value="L" ${player.position === 'L' ? 'selected' : ''}>Libero (L)</option>
+                  <option value="DS" ${player.position === 'DS' ? 'selected' : ''}>Defensive Specialist (DS)</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Experience Level *</label>
+                <select id="${prefix}experience_level" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                  <option value="">Select Level</option>
+                  <option value="none" ${player.experience_level === 'none' ? 'selected' : ''}>No Experience</option>
+                  <option value="beginner" ${player.experience_level === 'beginner' ? 'selected' : ''}>Beginner (less than 1 year)</option>
+                  <option value="intermediate" ${player.experience_level === 'intermediate' ? 'selected' : ''}>Intermediate (1-2 years)</option>
+                  <option value="advanced" ${player.experience_level === 'advanced' ? 'selected' : ''}>Advanced (3+ years)</option>
+                  <option value="club" ${player.experience_level === 'club' ? 'selected' : ''}>Club Experience</option>
+                </select>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Experience Details</label>
+                <textarea id="${prefix}experience_details" 
+                  class="w-full bg-dark border border-border rounded-xl p-4 text-white h-20" 
+                  placeholder="Previous teams, camps, training...">${player.experience_details}</textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Goals for This Season</label>
+                <textarea id="${prefix}goals" 
+                  class="w-full bg-dark border border-border rounded-xl p-4 text-white h-20" 
+                  placeholder="What do you hope to achieve?">${player.goals}</textarea>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Jersey Preferences -->
+          <div class="border-t border-border pt-6">
+            <p class="text-sm text-gold mb-4">Jersey Preferences</p>
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">1st Choice</label>
+                <input type="number" id="${prefix}jersey_pref_1" value="${player.jersey_pref_1}"
+                  class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">2nd Choice</label>
+                <input type="number" id="${prefix}jersey_pref_2" value="${player.jersey_pref_2}"
+                  class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">3rd Choice</label>
+                <input type="number" id="${prefix}jersey_pref_3" value="${player.jersey_pref_3}"
+                  class="w-full bg-dark border border-border rounded-xl p-4 text-white" min="0" max="99" placeholder="#">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Uniform Sizes -->
+          <div class="border-t border-border pt-6">
+            <p class="text-sm text-gold mb-4">Uniform Sizes</p>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Jersey Size *</label>
+                <select id="${prefix}uniform_size_jersey" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                  <option value="">Select Size</option>
+                  <option value="YS" ${player.uniform_size_jersey === 'YS' ? 'selected' : ''}>Youth Small</option>
+                  <option value="YM" ${player.uniform_size_jersey === 'YM' ? 'selected' : ''}>Youth Medium</option>
+                  <option value="YL" ${player.uniform_size_jersey === 'YL' ? 'selected' : ''}>Youth Large</option>
+                  <option value="AS" ${player.uniform_size_jersey === 'AS' ? 'selected' : ''}>Adult Small</option>
+                  <option value="AM" ${player.uniform_size_jersey === 'AM' ? 'selected' : ''}>Adult Medium</option>
+                  <option value="AL" ${player.uniform_size_jersey === 'AL' ? 'selected' : ''}>Adult Large</option>
+                  <option value="AXL" ${player.uniform_size_jersey === 'AXL' ? 'selected' : ''}>Adult XL</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm text-gray-400 mb-2">Shorts Size *</label>
+                <select id="${prefix}uniform_size_shorts" class="w-full bg-dark border border-border rounded-xl p-4 text-white" required>
+                  <option value="">Select Size</option>
+                  <option value="YS" ${player.uniform_size_shorts === 'YS' ? 'selected' : ''}>Youth Small</option>
+                  <option value="YM" ${player.uniform_size_shorts === 'YM' ? 'selected' : ''}>Youth Medium</option>
+                  <option value="YL" ${player.uniform_size_shorts === 'YL' ? 'selected' : ''}>Youth Large</option>
+                  <option value="AS" ${player.uniform_size_shorts === 'AS' ? 'selected' : ''}>Adult Small</option>
+                  <option value="AM" ${player.uniform_size_shorts === 'AM' ? 'selected' : ''}>Adult Medium</option>
+                  <option value="AL" ${player.uniform_size_shorts === 'AL' ? 'selected' : ''}>Adult Large</option>
+                  <option value="AXL" ${player.uniform_size_shorts === 'AXL' ? 'selected' : ''}>Adult XL</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        ${players.length > 1 ? `
+          <div class="flex justify-between mt-6 pt-4 border-t border-border">
+            <button onclick="prevPlayerTab()" class="text-gray-400 text-sm ${activePlayerIndex === 0 ? 'invisible' : ''}">
+              ← Previous Player
+            </button>
+            <button onclick="nextPlayerTab()" class="text-gold text-sm ${activePlayerIndex === players.length - 1 ? 'invisible' : ''}">
+              Next Player →
+            </button>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function prevPlayerTab() {
+      if (activePlayerIndex > 0) {
+        switchPlayerTab(activePlayerIndex - 1);
+      }
+    }
+
+    function nextPlayerTab() {
+      if (activePlayerIndex < players.length - 1) {
+        switchPlayerTab(activePlayerIndex + 1);
+      }
+    }
+
+    // Toggle medical fields visibility
+    function toggleMedicalFields(index) {
+      const prefix = 'pd_' + index + '_';
+      const checkbox = document.getElementById(prefix + 'has_medical');
+      const fieldsContainer = document.getElementById(prefix + 'medical_fields');
+      
+      if (checkbox.checked) {
+        fieldsContainer.classList.remove('hidden');
+      } else {
+        fieldsContainer.classList.add('hidden');
+        // Clear the fields when unchecked
+        document.getElementById(prefix + 'medical_conditions').value = '';
+        document.getElementById(prefix + 'allergies').value = '';
+        document.getElementById(prefix + 'medications').value = '';
+        // Also clear from player data
+        players[index].medical_conditions = '';
+        players[index].allergies = '';
+        players[index].medications = '';
+      }
+    }
+
+    // Update waiver players list
+    function updateWaiverPlayersList() {
+      const container = document.getElementById('waiver-players-list');
+      container.innerHTML = players.map(p => 
+        `<p class="text-white">• ${p.first_name} ${p.last_name}</p>`
+      ).join('');
     }
 
     // Update signer name preview when entering step 5
@@ -622,13 +946,11 @@
         return;
       }
       
-      // Check if waivers are checked
       if (!document.getElementById('waiver_liability').checked || !document.getElementById('waiver_conduct').checked) {
         alert('Please check all required waivers before signing.');
         return;
       }
       
-      // Set signature data
       const now = new Date();
       const formattedDate = now.toLocaleDateString('en-US', { 
         year: 'numeric', 
@@ -645,7 +967,6 @@
       document.getElementById('signed-name-display').textContent = parentName;
       document.getElementById('signed-timestamp').textContent = formattedDate;
       
-      // Toggle visibility
       document.getElementById('unsigned-container').classList.add('hidden');
       document.getElementById('signed-container').classList.remove('hidden');
       
@@ -656,17 +977,13 @@
     function clearSignature() {
       document.getElementById('waiver_signed_by').value = '';
       document.getElementById('waiver_signed_date').value = '';
-      
-      // Toggle visibility
       document.getElementById('signed-container').classList.add('hidden');
       document.getElementById('unsigned-container').classList.remove('hidden');
-      
       isSigned = false;
     }
 
     async function init() {
       try {
-        // Fetch seasons with registration_open = true
         const { data: seasons, error } = await db
           .from('seasons')
           .select('*')
@@ -680,13 +997,10 @@
         document.getElementById('loading').classList.add('hidden');
 
         if (openSeasons.length === 0) {
-          // No seasons open for registration
           document.getElementById('no-season').classList.remove('hidden');
         } else if (openSeasons.length === 1) {
-          // Only one season - go straight to form
           selectSeason(openSeasons[0]);
         } else {
-          // Multiple seasons - show selector
           showSeasonSelector();
         }
 
@@ -731,13 +1045,14 @@
       document.getElementById('season-name').textContent = season.name;
       document.getElementById('success-season-name').textContent = season.name;
       
-      // Show "change season" button if multiple seasons
       if (openSeasons.length > 1) {
         document.getElementById('change-season-btn').classList.remove('hidden');
       }
       
       document.getElementById('season-selector').classList.add('hidden');
       document.getElementById('form-container').classList.remove('hidden');
+      
+      initPlayers();
       updateStepDots();
     }
 
@@ -755,6 +1070,7 @@
         showSeasonSelector();
       } else {
         document.getElementById('form-container').classList.remove('hidden');
+        initPlayers();
         updateStepDots();
       }
     }
@@ -762,7 +1078,11 @@
     function resetForm() {
       currentStep = 1;
       isSigned = false;
-      document.querySelectorAll('input, textarea, select').forEach(el => {
+      activePlayerIndex = 0;
+      players = [];
+      
+      // Reset all form inputs
+      document.querySelectorAll('#step-2 input, #step-2 select, #step-3 input, #step-5 input[type="checkbox"]').forEach(el => {
         if (el.type === 'checkbox') {
           el.checked = false;
         } else if (el.tagName === 'SELECT') {
@@ -799,36 +1119,73 @@
     }
 
     function validateStep(step) {
-      const validations = {
-        1: ['first_name', 'last_name', 'dob', 'grade', 'school', 'player_type'],
-        2: ['parent_name', 'parent_phone', 'parent_email', 'street', 'city', 'state', 'zip'],
-        3: ['emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation'],
-        4: ['experience_level', 'uniform_size_jersey', 'uniform_size_shorts'],
-        5: ['waiver_liability', 'waiver_conduct']
-      };
-
-      const fields = validations[step];
-      for (const fieldId of fields) {
-        const el = document.getElementById(fieldId);
-        if (el.type === 'checkbox') {
-          if (!el.checked) {
-            alert('Please complete all required fields.');
-            el.focus();
+      if (step === 1) {
+        // Save all player data first
+        players.forEach((_, index) => savePlayerData(index));
+        
+        // Validate each player
+        for (let i = 0; i < players.length; i++) {
+          const p = players[i];
+          if (!p.first_name || !p.last_name || !p.dob || !p.grade || !p.school || !p.player_type) {
+            alert(`Please complete all required fields for Player ${i + 1}.`);
             return false;
           }
-        } else {
+        }
+        return true;
+      }
+      
+      if (step === 2) {
+        const fields = ['parent_name', 'parent_phone', 'parent_email', 'street', 'city', 'state', 'zip'];
+        for (const fieldId of fields) {
+          const el = document.getElementById(fieldId);
           if (!el.value.trim()) {
             alert('Please complete all required fields.');
             el.focus();
             return false;
           }
         }
+        return true;
       }
       
-      // Special validation for step 5 - signature
-      if (step === 5 && !isSigned) {
-        alert('Please tap to sign the agreement before submitting.');
-        return false;
+      if (step === 3) {
+        const fields = ['emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation'];
+        for (const fieldId of fields) {
+          const el = document.getElementById(fieldId);
+          if (!el.value.trim()) {
+            alert('Please complete all required fields.');
+            el.focus();
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      if (step === 4) {
+        // Save current player details
+        savePlayerDetails(activePlayerIndex);
+        
+        // Validate each player's required fields
+        for (let i = 0; i < players.length; i++) {
+          const p = players[i];
+          if (!p.experience_level || !p.uniform_size_jersey || !p.uniform_size_shorts) {
+            alert(`Please complete experience level and uniform sizes for ${p.first_name || 'Player ' + (i + 1)}.`);
+            switchPlayerTab(i);
+            return false;
+          }
+        }
+        return true;
+      }
+      
+      if (step === 5) {
+        if (!document.getElementById('waiver_liability').checked || !document.getElementById('waiver_conduct').checked) {
+          alert('Please check all required waivers.');
+          return false;
+        }
+        if (!isSigned) {
+          alert('Please tap to sign the agreement before submitting.');
+          return false;
+        }
+        return true;
       }
       
       return true;
@@ -836,19 +1193,33 @@
 
     function nextStep(step) {
       if (!validateStep(step)) return;
+      
       document.getElementById('step-' + step).classList.add('hidden');
       document.getElementById('step-' + (step + 1)).classList.remove('hidden');
       currentStep = step + 1;
       updateStepDots();
       window.scrollTo(0, 0);
       
-      // Update signer name preview when entering step 5
+      // Setup step 4 - player details
+      if (currentStep === 4) {
+        activePlayerIndex = 0;
+        renderPlayerTabs();
+        renderPlayerDetailsForm();
+      }
+      
+      // Setup step 5 - waivers
       if (currentStep === 5) {
+        updateWaiverPlayersList();
         updateSignerNamePreview();
       }
     }
 
     function prevStep(step) {
+      // Save player details if coming from step 4
+      if (step === 4) {
+        savePlayerDetails(activePlayerIndex);
+      }
+      
       document.getElementById('step-' + step).classList.add('hidden');
       document.getElementById('step-' + (step - 1)).classList.remove('hidden');
       currentStep = step - 1;
@@ -872,15 +1243,12 @@
       btn.textContent = 'Submitting...';
 
       try {
-        const playerData = {
+        // Generate family_id if multiple players
+        const familyId = players.length > 1 ? generateUUID() : null;
+        
+        // Shared data
+        const sharedData = {
           season_id: selectedSeason.id,
-          first_name: document.getElementById('first_name').value.trim(),
-          last_name: document.getElementById('last_name').value.trim(),
-          dob: document.getElementById('dob').value,
-          grade: parseInt(document.getElementById('grade').value),
-          school: document.getElementById('school').value.trim(),
-          player_type: document.getElementById('player_type').value,
-          status: 'new',
           parent_name: document.getElementById('parent_name').value.trim(),
           parent_phone: document.getElementById('parent_phone').value.trim(),
           parent_email: document.getElementById('parent_email').value.trim(),
@@ -891,18 +1259,6 @@
           emergency_contact_name: document.getElementById('emergency_contact_name').value.trim(),
           emergency_contact_phone: document.getElementById('emergency_contact_phone').value.trim(),
           emergency_contact_relation: document.getElementById('emergency_contact_relation').value.trim(),
-          medical_conditions: document.getElementById('medical_conditions').value.trim() || null,
-          allergies: document.getElementById('allergies').value.trim() || null,
-          medications: document.getElementById('medications').value.trim() || null,
-          position: document.getElementById('position').value || null,
-          experience_level: document.getElementById('experience_level').value,
-          experience_details: document.getElementById('experience_details').value.trim() || null,
-          goals: document.getElementById('goals').value.trim() || null,
-          jersey_pref_1: document.getElementById('jersey_pref_1').value ? parseInt(document.getElementById('jersey_pref_1').value) : null,
-          jersey_pref_2: document.getElementById('jersey_pref_2').value ? parseInt(document.getElementById('jersey_pref_2').value) : null,
-          jersey_pref_3: document.getElementById('jersey_pref_3').value ? parseInt(document.getElementById('jersey_pref_3').value) : null,
-          uniform_size_jersey: document.getElementById('uniform_size_jersey').value,
-          uniform_size_shorts: document.getElementById('uniform_size_shorts').value,
           waiver_liability: document.getElementById('waiver_liability').checked,
           waiver_photo: document.getElementById('waiver_photo').checked,
           waiver_conduct: document.getElementById('waiver_conduct').checked,
@@ -910,33 +1266,75 @@
           waiver_signed_date: document.getElementById('waiver_signed_date').value,
           registration_source: 'web',
           registration_date: new Date().toISOString(),
+          family_id: familyId,
         };
 
-        const { data: player, error: playerError } = await db
-          .from('players')
-          .insert(playerData)
-          .select()
-          .single();
+        const createdPlayers = [];
+        
+        // Create each player
+        for (const player of players) {
+          const playerData = {
+            ...sharedData,
+            first_name: player.first_name,
+            last_name: player.last_name,
+            dob: player.dob,
+            grade: parseInt(player.grade),
+            school: player.school,
+            player_type: player.player_type,
+            status: 'new',
+            medical_conditions: player.medical_conditions || null,
+            allergies: player.allergies || null,
+            medications: player.medications || null,
+            position: player.position || null,
+            experience_level: player.experience_level,
+            experience_details: player.experience_details || null,
+            goals: player.goals || null,
+            jersey_pref_1: player.jersey_pref_1 ? parseInt(player.jersey_pref_1) : null,
+            jersey_pref_2: player.jersey_pref_2 ? parseInt(player.jersey_pref_2) : null,
+            jersey_pref_3: player.jersey_pref_3 ? parseInt(player.jersey_pref_3) : null,
+            uniform_size_jersey: player.uniform_size_jersey,
+            uniform_size_shorts: player.uniform_size_shorts,
+          };
 
-        if (playerError) throw playerError;
+          const { data: createdPlayer, error: playerError } = await db
+            .from('players')
+            .insert(playerData)
+            .select()
+            .single();
 
-        const payments = [
-          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'registration', amount: selectedSeason.fee_registration || 150, paid: false },
-          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'uniform', amount: selectedSeason.fee_uniform || 35, paid: false },
-          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'monthly_1', amount: selectedSeason.fee_monthly || 50, paid: false },
-          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'monthly_2', amount: selectedSeason.fee_monthly || 50, paid: false },
-          { season_id: selectedSeason.id, player_id: player.id, fee_type: 'monthly_3', amount: selectedSeason.fee_monthly || 50, paid: false },
-        ];
+          if (playerError) throw playerError;
+          
+          createdPlayers.push(createdPlayer);
 
-        const { error: paymentsError } = await db
-          .from('payments')
-          .insert(payments);
+          // Create payments for this player
+          const payments = [
+            { season_id: selectedSeason.id, player_id: createdPlayer.id, fee_type: 'registration', amount: selectedSeason.fee_registration || 150, paid: false },
+            { season_id: selectedSeason.id, player_id: createdPlayer.id, fee_type: 'uniform', amount: selectedSeason.fee_uniform || 35, paid: false },
+            { season_id: selectedSeason.id, player_id: createdPlayer.id, fee_type: 'monthly_1', amount: selectedSeason.fee_monthly || 50, paid: false },
+            { season_id: selectedSeason.id, player_id: createdPlayer.id, fee_type: 'monthly_2', amount: selectedSeason.fee_monthly || 50, paid: false },
+            { season_id: selectedSeason.id, player_id: createdPlayer.id, fee_type: 'monthly_3', amount: selectedSeason.fee_monthly || 50, paid: false },
+          ];
 
-        if (paymentsError) throw paymentsError;
+          const { error: paymentsError } = await db.from('payments').insert(payments);
+          if (paymentsError) throw paymentsError;
 
-        document.getElementById('form-container').classList.add('hidden');
-        document.getElementById('success').classList.remove('hidden');
-        window.scrollTo(0, 0);
+          // Create registration record
+          const regData = {
+            player_id: createdPlayer.id,
+            season_id: selectedSeason.id,
+            family_id: familyId,
+            status: 'new',
+            submitted_at: new Date().toISOString(),
+            needs_evaluation: player.player_type === 'new',
+            registration_source: 'web',
+          };
+
+          const { error: regError } = await db.from('registrations').insert(regData);
+          if (regError) console.warn('Registration record error:', regError); // Non-fatal
+        }
+
+        // Show success
+        showSuccessScreen(createdPlayers);
 
       } catch (error) {
         console.error('Error:', error);
@@ -946,8 +1344,51 @@
       }
     }
 
-    init();
-  </script>
+    function showSuccessScreen(createdPlayers) {
+      // Update registered players list
+      const playersList = document.getElementById('registered-players-list');
+      playersList.innerHTML = createdPlayers.map(p => `
+        <div class="flex items-center gap-3 bg-dark p-3 rounded-lg">
+          <div class="w-8 h-8 bg-success rounded-full flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+            </svg>
+          </div>
+          <div>
+            <p class="font-medium">${p.first_name} ${p.last_name}</p>
+            <p class="text-sm text-gray-400">Grade ${p.grade} • ${p.player_type === 'returning' ? 'Returning' : 'New'}</p>
+          </div>
+        </div>
+      `).join('');
 
-</body>
-</html>
+      // Update payment breakdown
+      const feeReg = selectedSeason.fee_registration || 150;
+      const feeUniform = selectedSeason.fee_uniform || 35;
+      const feeMonthly = selectedSeason.fee_monthly || 50;
+      const perPlayer = feeReg + feeUniform + (feeMonthly * 3);
+      const total = perPlayer * createdPlayers.length;
+
+      const paymentBreakdown = document.getElementById('payment-breakdown');
+      paymentBreakdown.innerHTML = `
+        <div class="flex justify-between">
+          <span class="text-gray-400">Registration Fee</span>
+          <span>$${feeReg} × ${createdPlayers.length}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">Uniform Fee</span>
+          <span>$${feeUniform} × ${createdPlayers.length}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-400">Monthly Fees (3 months)</span>
+          <span>$${feeMonthly * 3} × ${createdPlayers.length}</span>
+        </div>
+        ${createdPlayers.length > 1 ? `
+          <div class="flex justify-between text-sm">
+            <span class="text-gray-400">Per player</span>
+            <span>$${perPlayer}</span>
+          </div>
+        ` : ''}
+        <div class="border-t border-border pt-3 flex justify-between font-bold">
+          <span>Total</span>
+          <span class="text-gold">$${total}</span>
+        </div

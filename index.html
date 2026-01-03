@@ -1270,22 +1270,45 @@
       btn.textContent = 'Submitting...';
 
       try {
-        // Generate family_id if multiple players
-        const familyId = players.length > 1 ? generateUUID() : null;
-        
-        // Shared data
-        const sharedData = {
-          season_id: selectedSeason.id,
-          parent_name: document.getElementById('parent_name').value.trim(),
-          parent_phone: document.getElementById('parent_phone').value.trim(),
-          parent_email: document.getElementById('parent_email').value.trim(),
+        // Shared contact data
+        const contactData = {
+          primary_contact_name: document.getElementById('parent_name').value.trim(),
+          primary_contact_phone: document.getElementById('parent_phone').value.trim(),
+          primary_contact_email: document.getElementById('parent_email').value.trim(),
+          secondary_contact_name: document.getElementById('parent_2_name').value.trim() || null,
+          secondary_contact_phone: document.getElementById('parent_2_phone').value.trim() || null,
+          secondary_contact_email: document.getElementById('parent_2_email').value.trim() || null,
           address: getFullAddress(),
-          parent_2_name: document.getElementById('parent_2_name').value.trim() || null,
-          parent_2_phone: document.getElementById('parent_2_phone').value.trim() || null,
-          parent_2_email: document.getElementById('parent_2_email').value.trim() || null,
           emergency_contact_name: document.getElementById('emergency_contact_name').value.trim(),
           emergency_contact_phone: document.getElementById('emergency_contact_phone').value.trim(),
           emergency_contact_relation: document.getElementById('emergency_contact_relation').value.trim(),
+        };
+
+        // Always create a family record (even for single player - cleaner data model)
+        const { data: familyData, error: familyError } = await db
+          .from('families')
+          .insert(contactData)
+          .select()
+          .single();
+
+        if (familyError) throw familyError;
+
+        const familyId = familyData.id;
+
+        // Shared data for all players
+        const sharedData = {
+          season_id: selectedSeason.id,
+          family_id: familyId,
+          parent_name: contactData.primary_contact_name,
+          parent_phone: contactData.primary_contact_phone,
+          parent_email: contactData.primary_contact_email,
+          address: contactData.address,
+          parent_2_name: contactData.secondary_contact_name,
+          parent_2_phone: contactData.secondary_contact_phone,
+          parent_2_email: contactData.secondary_contact_email,
+          emergency_contact_name: contactData.emergency_contact_name,
+          emergency_contact_phone: contactData.emergency_contact_phone,
+          emergency_contact_relation: contactData.emergency_contact_relation,
           waiver_liability: document.getElementById('waiver_liability').checked,
           waiver_photo: document.getElementById('waiver_photo').checked,
           waiver_conduct: document.getElementById('waiver_conduct').checked,
@@ -1293,7 +1316,6 @@
           waiver_signed_date: document.getElementById('waiver_signed_date').value,
           registration_source: 'web',
           registration_date: new Date().toISOString(),
-          family_id: familyId,
         };
 
         const createdPlayers = [];

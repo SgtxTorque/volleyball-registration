@@ -190,7 +190,7 @@
       <div id="step-1" class="step-content">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Player Information</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 1 of 5 • Add all children you want to register</p>
+          <p class="text-gray-400 text-sm mb-6">Step 1 of 5 &bull; Add all children you want to register</p>
           
           <div id="players-container" class="space-y-4">
             <!-- Player cards will be inserted here -->
@@ -213,7 +213,7 @@
       <div id="step-2" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Parent/Guardian Information</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 2 of 5 • This applies to all players</p>
+          <p class="text-gray-400 text-sm mb-6">Step 2 of 5 &bull; This applies to all players</p>
           
           <div class="space-y-4">
             <div>
@@ -293,7 +293,7 @@
       <div id="step-3" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Emergency Contact</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 3 of 5 • Contact other than parent/guardian</p>
+          <p class="text-gray-400 text-sm mb-6">Step 3 of 5 &bull; Contact other than parent/guardian</p>
           
           <div class="space-y-4">
             <div>
@@ -327,7 +327,7 @@
       <div id="step-4" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Player Details</h2>
-          <p class="text-gray-400 text-sm mb-4">Step 4 of 5 • Medical, volleyball & uniform info</p>
+          <p class="text-gray-400 text-sm mb-4">Step 4 of 5 &bull; Medical, volleyball & uniform info</p>
           
           <!-- Player Tabs -->
           <div id="player-tabs" class="flex gap-2 mb-6 overflow-x-auto pb-2">
@@ -354,7 +354,7 @@
       <div id="step-5" class="step-content hidden">
         <div class="bg-card rounded-2xl p-6">
           <h2 class="text-lg font-bold mb-1">Waivers & Agreement</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 5 of 5 • Applies to all registered players</p>
+          <p class="text-gray-400 text-sm mb-6">Step 5 of 5 &bull; Applies to all registered players</p>
           
           <!-- Players being registered summary -->
           <div class="bg-dark rounded-xl p-4 mb-6">
@@ -750,7 +750,7 @@
                 <svg class="w-5 h-5 text-info flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <p class="text-sm text-info">Only fill in what applies — leave other fields blank</p>
+                <p class="text-sm text-info">Only fill in what applies - leave other fields blank</p>
               </div>
               
               <div class="space-y-4">
@@ -880,10 +880,10 @@
         ${players.length > 1 ? `
           <div class="flex justify-between mt-6 pt-4 border-t border-border">
             <button onclick="prevPlayerTab()" class="text-gray-400 text-sm ${activePlayerIndex === 0 ? 'invisible' : ''}">
-              ← Previous Player
+              &larr; Previous Player
             </button>
             <button onclick="nextPlayerTab()" class="text-gold text-sm ${activePlayerIndex === players.length - 1 ? 'invisible' : ''}">
-              Next Player →
+              Next Player &rarr;
             </button>
           </div>
         ` : ''}
@@ -927,7 +927,7 @@
     function updateWaiverPlayersList() {
       const container = document.getElementById('waiver-players-list');
       container.innerHTML = players.map(p => 
-        `<p class="text-white">• ${p.first_name} ${p.last_name}</p>`
+        `<p class="text-white">&bull; ${p.first_name} ${p.last_name}</p>`
       ).join('');
     }
 
@@ -1356,7 +1356,7 @@
           </div>
           <div>
             <p class="font-medium">${p.first_name} ${p.last_name}</p>
-            <p class="text-sm text-gray-400">Grade ${p.grade} • ${p.player_type === 'returning' ? 'Returning' : 'New'}</p>
+            <p class="text-sm text-gray-400">Grade ${p.grade} &bull; ${p.player_type === 'returning' ? 'Returning' : 'New'}</p>
           </div>
         </div>
       `).join('');
@@ -1372,15 +1372,15 @@
       paymentBreakdown.innerHTML = `
         <div class="flex justify-between">
           <span class="text-gray-400">Registration Fee</span>
-          <span>$${feeReg} × ${createdPlayers.length}</span>
+          <span>$${feeReg} x ${createdPlayers.length}</span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-400">Uniform Fee</span>
-          <span>$${feeUniform} × ${createdPlayers.length}</span>
+          <span>$${feeUniform} x ${createdPlayers.length}</span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-400">Monthly Fees (3 months)</span>
-          <span>$${feeMonthly * 3} × ${createdPlayers.length}</span>
+          <span>$${feeMonthly * 3} x ${createdPlayers.length}</span>
         </div>
         ${createdPlayers.length > 1 ? `
           <div class="flex justify-between text-sm">

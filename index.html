@@ -34,6 +34,21 @@
     }
     .step-dot.active { background-color: #FFD700; }
     .step-dot.completed { background-color: #34C759; }
+    
+    /* Tap to Sign button animation */
+    .sign-btn {
+      transition: all 0.3s ease;
+    }
+    .sign-btn:active {
+      transform: scale(0.98);
+    }
+    .signed-container {
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body class="bg-dark min-h-screen text-white">
@@ -497,12 +512,62 @@
               </div>
             </div>
             
-            <div class="border-t border-border pt-4">
-              <div>
-                <label class="block text-sm text-gray-400 mb-2">Parent/Guardian Signature (Type Full Name) *</label>
-                <input type="text" id="waiver_signed_by" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Type your full legal name" required>
+            <!-- TAP TO SIGN SECTION -->
+            <div class="border-t border-border pt-6">
+              <p class="text-sm text-gray-400 mb-4">Parent/Guardian Signature *</p>
+              
+              <!-- Unsigned State -->
+              <div id="unsigned-container">
+                <div class="bg-dark rounded-xl p-4 mb-4">
+                  <p class="text-sm text-gray-300 leading-relaxed">
+                    By signing below, I acknowledge that I have read and agree to all waivers above. 
+                    I certify that all information provided in this registration is accurate and complete to the best of my knowledge.
+                  </p>
+                </div>
+                
+                <button 
+                  type="button"
+                  onclick="tapToSign()" 
+                  id="tap-to-sign-btn"
+                  class="sign-btn w-full bg-gold text-dark font-bold py-5 rounded-xl flex items-center justify-center gap-3"
+                >
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                  </svg>
+                  <span id="sign-btn-text">Tap to Sign as "<span id="signer-name-preview">Parent Name</span>"</span>
+                </button>
+                <p class="text-xs text-gray-500 text-center mt-2">Your name will be pulled from the Parent/Guardian field</p>
               </div>
-              <p class="text-xs text-gray-400 mt-2">By typing your name above, you agree this constitutes a legal signature.</p>
+              
+              <!-- Signed State (hidden initially) -->
+              <div id="signed-container" class="hidden signed-container">
+                <div class="bg-success/20 border-2 border-success rounded-xl p-5">
+                  <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-success rounded-full flex items-center justify-center">
+                      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-bold text-success">Signed</p>
+                      <p class="text-white font-medium" id="signed-name-display">John Smith</p>
+                    </div>
+                  </div>
+                  <p class="text-sm text-gray-400" id="signed-timestamp">January 3, 2026 at 12:45 PM</p>
+                </div>
+                
+                <button 
+                  type="button"
+                  onclick="clearSignature()" 
+                  class="w-full text-gray-400 text-sm py-3 mt-2"
+                >
+                  Clear signature and sign again
+                </button>
+              </div>
+              
+              <!-- Hidden inputs for form data -->
+              <input type="hidden" id="waiver_signed_by" value="">
+              <input type="hidden" id="waiver_signed_date" value="">
             </div>
           </div>
         </div>
@@ -528,6 +593,7 @@
     let openSeasons = [];
     let selectedSeason = null;
     let currentStep = 1;
+    let isSigned = false;
 
     // Phone formatter
     function formatPhone(input) {
@@ -539,6 +605,63 @@
         value = value.substring(0, 3) + '-' + value.substring(3);
       }
       input.value = value;
+    }
+
+    // Update signer name preview when entering step 5
+    function updateSignerNamePreview() {
+      const parentName = document.getElementById('parent_name').value.trim() || 'Parent Name';
+      document.getElementById('signer-name-preview').textContent = parentName;
+    }
+
+    // Tap to Sign function
+    function tapToSign() {
+      const parentName = document.getElementById('parent_name').value.trim();
+      
+      if (!parentName) {
+        alert('Please go back and enter the Parent/Guardian Name first.');
+        return;
+      }
+      
+      // Check if waivers are checked
+      if (!document.getElementById('waiver_liability').checked || !document.getElementById('waiver_conduct').checked) {
+        alert('Please check all required waivers before signing.');
+        return;
+      }
+      
+      // Set signature data
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }) + ' at ' + now.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+      });
+      
+      document.getElementById('waiver_signed_by').value = parentName;
+      document.getElementById('waiver_signed_date').value = now.toISOString();
+      document.getElementById('signed-name-display').textContent = parentName;
+      document.getElementById('signed-timestamp').textContent = formattedDate;
+      
+      // Toggle visibility
+      document.getElementById('unsigned-container').classList.add('hidden');
+      document.getElementById('signed-container').classList.remove('hidden');
+      
+      isSigned = true;
+    }
+
+    // Clear signature
+    function clearSignature() {
+      document.getElementById('waiver_signed_by').value = '';
+      document.getElementById('waiver_signed_date').value = '';
+      
+      // Toggle visibility
+      document.getElementById('signed-container').classList.add('hidden');
+      document.getElementById('unsigned-container').classList.remove('hidden');
+      
+      isSigned = false;
     }
 
     async function init() {
@@ -638,6 +761,7 @@
 
     function resetForm() {
       currentStep = 1;
+      isSigned = false;
       document.querySelectorAll('input, textarea, select').forEach(el => {
         if (el.type === 'checkbox') {
           el.checked = false;
@@ -648,6 +772,11 @@
         }
       });
       document.getElementById('state').value = 'TX';
+      
+      // Reset signature UI
+      document.getElementById('signed-container').classList.add('hidden');
+      document.getElementById('unsigned-container').classList.remove('hidden');
+      document.getElementById('signer-name-preview').textContent = 'Parent Name';
       
       // Reset step visibility
       for (let i = 1; i <= 5; i++) {
@@ -675,7 +804,7 @@
         2: ['parent_name', 'parent_phone', 'parent_email', 'street', 'city', 'state', 'zip'],
         3: ['emergency_contact_name', 'emergency_contact_phone', 'emergency_contact_relation'],
         4: ['experience_level', 'uniform_size_jersey', 'uniform_size_shorts'],
-        5: ['waiver_liability', 'waiver_conduct', 'waiver_signed_by']
+        5: ['waiver_liability', 'waiver_conduct']
       };
 
       const fields = validations[step];
@@ -695,6 +824,13 @@
           }
         }
       }
+      
+      // Special validation for step 5 - signature
+      if (step === 5 && !isSigned) {
+        alert('Please tap to sign the agreement before submitting.');
+        return false;
+      }
+      
       return true;
     }
 
@@ -705,6 +841,11 @@
       currentStep = step + 1;
       updateStepDots();
       window.scrollTo(0, 0);
+      
+      // Update signer name preview when entering step 5
+      if (currentStep === 5) {
+        updateSignerNamePreview();
+      }
     }
 
     function prevStep(step) {
@@ -765,8 +906,8 @@
           waiver_liability: document.getElementById('waiver_liability').checked,
           waiver_photo: document.getElementById('waiver_photo').checked,
           waiver_conduct: document.getElementById('waiver_conduct').checked,
-          waiver_signed_by: document.getElementById('waiver_signed_by').value.trim(),
-          waiver_signed_date: new Date().toISOString(),
+          waiver_signed_by: document.getElementById('waiver_signed_by').value,
+          waiver_signed_date: document.getElementById('waiver_signed_date').value,
           registration_source: 'web',
           registration_date: new Date().toISOString(),
         };

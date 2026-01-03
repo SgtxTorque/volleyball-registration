@@ -30,6 +30,33 @@
       -moz-appearance: none;
       appearance: none;
     }
+    input[type="checkbox"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background-color: #1a1a1a;
+      border: 2px solid #555;
+      border-radius: 4px;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    input[type="checkbox"]:checked {
+      background-color: #FFD700;
+      border-color: #FFD700;
+    }
+    input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 6px;
+      height: 12px;
+      border: solid #0a0a0a;
+      border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
+    }
     input[type="date"]::-webkit-calendar-picker-indicator {
       filter: invert(1);
     }

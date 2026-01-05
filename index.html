@@ -245,7 +245,7 @@
             <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">Z</div>
             <div>
               <p class="font-medium">Zelle</p>
-              <p class="text-gold"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="492b25282a2221263b272c3d3a3f2625252c302b282525092e24282025672a2624">[email&#160;protected]</a></p>
+              <p class="text-gold">blackhornetsvolleyball@gmail.com</p>
             </div>
           </div>
           <div class="flex items-center gap-3">
@@ -534,7 +534,7 @@
     </div>
   </div>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
     // Initialize Supabase
     const SUPABASE_URL = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTEwODMsImV4cCI6MjA4Mjc4NzA4M30.k643d5gVS2uWWe_QgSvAMjWVuRgBIU2wI0bR38vYDCc';
@@ -542,11 +542,10 @@
 
     // Global state
     let allSports = [];
-    let allSeasons = []; // All open seasons grouped by sport
+    let allSeasons = [];
     let players = [];
     let activePlayerIndex = 0;
     let currentStep = 1;
-    let isSigned = false;
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', init);
@@ -614,7 +613,7 @@
         medical_conditions: '',
         medications: '',
         allergies: '',
-        sports: {} // { sportId: seasonId }
+        sports: {}
       }];
       activePlayerIndex = 0;
       renderPlayers();
@@ -631,7 +630,6 @@
         container.appendChild(card);
       });
 
-      // Update add button state
       const addBtn = document.getElementById('add-player-btn');
       if (players.length >= 6) {
         addBtn.classList.add('hidden');
@@ -653,8 +651,6 @@
         const seasonOptions = sportSeasons.map(season => 
           `<option value="${season.id}" ${selectedSeasonId === season.id ? 'selected' : ''}>${season.name}</option>`
         ).join('');
-
-        const sportColor = sport.code === 'VB' ? 'volleyball' : 'basketball';
 
         return `
           <div class="sport-checkbox border border-border rounded-xl p-3 ${isChecked ? 'checked' : ''}" id="sport-box-${index}-${sport.id}">
@@ -718,6 +714,10 @@
               <select onchange="updatePlayer(${index}, 'grade', this.value)"
                       class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm">
                 <option value="">Select...</option>
+                <option value="K" ${player.grade === 'K' ? 'selected' : ''}>Kinder</option>
+                <option value="1" ${player.grade === '1' ? 'selected' : ''}>1st</option>
+                <option value="2" ${player.grade === '2' ? 'selected' : ''}>2nd</option>
+                <option value="3" ${player.grade === '3' ? 'selected' : ''}>3rd</option>
                 <option value="4" ${player.grade === '4' ? 'selected' : ''}>4th</option>
                 <option value="5" ${player.grade === '5' ? 'selected' : ''}>5th</option>
                 <option value="6" ${player.grade === '6' ? 'selected' : ''}>6th</option>
@@ -793,7 +793,7 @@
             <p class="text-xs text-gray-500 mb-3">Request a specific coach, teammate, or share any scheduling preferences</p>
             <textarea onchange="updatePlayer(${index}, 'placement_preferences', this.value)"
                       class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm h-20"
-                      placeholder="e.g., Wants to be on same team as Sarah Smith, prefers Coach Johnson, needs afternoon practices...">${player.placement_preferences || ''}</textarea>
+                      placeholder="e.g., Wants to be on same team as Sarah Smith, prefers Coach Johnson...">${player.placement_preferences || ''}</textarea>
           </div>
           
           <!-- Medical Info Toggle -->
@@ -836,10 +836,8 @@
     function toggleSport(playerIndex, sportId) {
       const player = players[playerIndex];
       if (player.sports[sportId] !== undefined) {
-        // Uncheck - remove sport
         delete player.sports[sportId];
       } else {
-        // Check - add sport with first available season
         const sportSeasons = allSeasons.filter(s => s.sport_id === sportId);
         if (sportSeasons.length > 0) {
           player.sports[sportId] = sportSeasons[0].id;
@@ -998,9 +996,7 @@
     }
 
     function updateReviewSection() {
-      // Build player summary with sports
       let playerSummary = '<p class="text-sm text-gray-400 mb-2">Players & Sports</p>';
-      
       let totalRegistrations = 0;
       
       players.forEach((player, i) => {
@@ -1021,16 +1017,12 @@
       });
       
       document.getElementById('review-players').innerHTML = playerSummary;
-      
-      // Contact info
       document.getElementById('review-parent-name').textContent = document.getElementById('parent_name').value;
       document.getElementById('review-parent-contact').textContent = document.getElementById('parent_email').value + ' • ' + document.getElementById('parent_phone').value;
       
-      // Fee estimate (rough estimate - $335 per registration)
       const estimatedTotal = totalRegistrations * 335;
       document.getElementById('review-total').textContent = `~$${estimatedTotal}`;
       
-      // Set today's date
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('waiver_signed_date').value = today;
     }
@@ -1049,7 +1041,7 @@
       btn.textContent = 'Submitting...';
 
       try {
-        // Create family record first
+        // Create family record
         const contactData = {
           primary_contact_name: document.getElementById('parent_name').value.trim(),
           primary_contact_phone: document.getElementById('parent_phone').value.trim(),
@@ -1074,7 +1066,6 @@
         const familyId = familyData.id;
         const createdRegistrations = [];
 
-        // Shared waiver data
         const waiverData = {
           waiver_liability: document.getElementById('waiver_liability').checked,
           waiver_photo: document.getElementById('waiver_photo').checked,
@@ -1083,35 +1074,35 @@
           waiver_signed_date: signedDate,
         };
 
-        // Create a player record for each player + sport combination
+        // Create player records for each player + sport combination
         for (const player of players) {
           for (const [sportId, seasonId] of Object.entries(player.sports)) {
             const sport = allSports.find(s => s.id === sportId);
             const season = allSeasons.find(s => s.id === seasonId);
             
+            // Handle grade - convert K to 0 for DB, keep number for others
+            let gradeValue = player.grade;
+            if (gradeValue === 'K') {
+              gradeValue = 0;
+            } else {
+              gradeValue = parseInt(player.grade);
+            }
+            
             const playerData = {
-              // Player info
               first_name: player.first_name.trim(),
               last_name: player.last_name.trim(),
               dob: player.dob,
-              grade: parseInt(player.grade),
+              grade: gradeValue,
               gender: player.gender,
               school: player.school?.trim() || null,
-              jersey_size: player.jersey_size,
-              short_size: player.short_size,
+              uniform_size_jersey: player.jersey_size,
+              uniform_size_shorts: player.short_size,
               placement_preferences: player.placement_preferences?.trim() || null,
-              
-              // Medical
-              has_medical_conditions: player.has_medical_conditions,
               medical_conditions: player.medical_conditions?.trim() || null,
               medications: player.medications?.trim() || null,
               allergies: player.allergies?.trim() || null,
-              
-              // Sport/Season
               sport_id: sportId,
               season_id: seasonId,
-              
-              // Family
               family_id: familyId,
               parent_name: contactData.primary_contact_name,
               parent_phone: contactData.primary_contact_phone,
@@ -1123,14 +1114,9 @@
               emergency_contact_name: contactData.emergency_contact_name,
               emergency_contact_phone: contactData.emergency_contact_phone,
               emergency_contact_relation: contactData.emergency_contact_relation,
-              
-              // Waivers
               ...waiverData,
-              
-              // Meta
-              status: 'new',
+              player_type: 'new',
               registration_source: 'web',
-              registration_date: new Date().toISOString(),
             };
 
             const { data: newPlayer, error: playerError } = await db
@@ -1150,6 +1136,7 @@
                 family_id: familyId,
                 status: 'new',
                 submitted_at: new Date().toISOString(),
+                registration_source: 'web',
               });
 
             if (regError) console.warn('Registration record error:', regError);
@@ -1162,7 +1149,6 @@
           }
         }
 
-        // Store for success screen
         window.registrationEmail = contactData.primary_contact_email;
         window.registrationPhone = contactData.primary_contact_phone;
         window.registrationFamilyId = familyId;
@@ -1179,7 +1165,6 @@
     }
 
     function showSuccess(registrations, family) {
-      // Build player list with sports
       const listHTML = registrations.map(reg => `
         <div class="flex items-center gap-3 p-3 bg-dark rounded-lg">
           <span class="text-2xl">${reg.sport?.icon || '🏆'}</span>
@@ -1191,11 +1176,8 @@
       `).join('');
       
       document.getElementById('registered-players-list').innerHTML = listHTML;
-      
-      // Account email
       document.getElementById('account-email-display').textContent = window.registrationEmail;
       
-      // Fee breakdown
       const totalFees = registrations.length * 335;
       document.getElementById('fee-breakdown').innerHTML = `
         <div class="flex justify-between">
@@ -1253,20 +1235,6 @@
         
         if (authError) throw authError;
         
-        // Create profile record
-        const profileData = {
-          id: authData.user.id,
-          email: email,
-          phone: window.registrationPhone,
-          full_name: document.getElementById('parent_name').value.trim(),
-          family_id: window.registrationFamilyId,
-          role: 'parent',
-          created_at: new Date().toISOString()
-        };
-        
-        const { error: profileError } = await db.from('profiles').insert(profileData);
-        if (profileError) console.warn('Profile creation note:', profileError.message);
-        
         // Update family with account linkage
         await db.from('families').update({ 
           account_id: authData.user.id,
@@ -1280,10 +1248,20 @@
           }).eq('id', reg.player.id);
         }
         
-        // Show success state
         document.getElementById('account-form').classList.add('hidden');
         document.getElementById('account-created').classList.remove('hidden');
         
       } catch (error) {
         console.error('Account creation error:', error);
-    
+        alert('Error creating account: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    }
+
+    function registerAnother() {
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>

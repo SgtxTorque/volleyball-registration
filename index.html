@@ -609,6 +609,7 @@
         school: '',
         jersey_size: '',
         short_size: '',
+        placement_preferences: '',
         has_medical_conditions: false,
         medical_conditions: '',
         medications: '',
@@ -786,6 +787,15 @@
             </div>
           </div>
           
+          <!-- Team/Coach Preferences -->
+          <div class="border-t border-border pt-4 mt-4">
+            <label class="block text-sm text-gray-400 mb-2">Placement Preferences (Optional)</label>
+            <p class="text-xs text-gray-500 mb-3">Request a specific coach, teammate, or share any scheduling preferences</p>
+            <textarea onchange="updatePlayer(${index}, 'placement_preferences', this.value)"
+                      class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm h-20"
+                      placeholder="e.g., Wants to be on same team as Sarah Smith, prefers Coach Johnson, needs afternoon practices...">${player.placement_preferences || ''}</textarea>
+          </div>
+          
           <!-- Medical Info Toggle -->
           <div class="border-t border-border pt-4 mt-4">
             <label class="flex items-center gap-3 cursor-pointer">
@@ -868,6 +878,7 @@
         school: '',
         jersey_size: '',
         short_size: '',
+        placement_preferences: '',
         has_medical_conditions: false,
         medical_conditions: '',
         medications: '',
@@ -1088,6 +1099,7 @@
               school: player.school?.trim() || null,
               jersey_size: player.jersey_size,
               short_size: player.short_size,
+              placement_preferences: player.placement_preferences?.trim() || null,
               
               // Medical
               has_medical_conditions: player.has_medical_conditions,

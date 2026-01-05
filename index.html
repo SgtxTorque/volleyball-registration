@@ -245,7 +245,7 @@
             <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">Z</div>
             <div>
               <p class="font-medium">Zelle</p>
-              <p class="text-gold">blackhornetsvolleyball@gmail.com</p>
+              <p class="text-gold"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="492b25282a2221263b272c3d3a3f2625252c302b282525092e24282025672a2624">[email&#160;protected]</a></p>
             </div>
           </div>
           <div class="flex items-center gap-3">
@@ -534,7 +534,7 @@
     </div>
   </div>
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // Initialize Supabase
     const SUPABASE_URL = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTEwODMsImV4cCI6MjA4Mjc4NzA4M30.k643d5gVS2uWWe_QgSvAMjWVuRgBIU2wI0bR38vYDCc';
@@ -607,6 +607,8 @@
         grade: '',
         gender: '',
         school: '',
+        jersey_size: '',
+        short_size: '',
         has_medical_conditions: false,
         medical_conditions: '',
         medications: '',
@@ -743,6 +745,39 @@
             </div>
           </div>
           
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Jersey Size *</label>
+              <select onchange="updatePlayer(${index}, 'jersey_size', this.value)"
+                      class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm">
+                <option value="">Select...</option>
+                <option value="YS" ${player.jersey_size === 'YS' ? 'selected' : ''}>Youth S</option>
+                <option value="YM" ${player.jersey_size === 'YM' ? 'selected' : ''}>Youth M</option>
+                <option value="YL" ${player.jersey_size === 'YL' ? 'selected' : ''}>Youth L</option>
+                <option value="YXL" ${player.jersey_size === 'YXL' ? 'selected' : ''}>Youth XL</option>
+                <option value="AS" ${player.jersey_size === 'AS' ? 'selected' : ''}>Adult S</option>
+                <option value="AM" ${player.jersey_size === 'AM' ? 'selected' : ''}>Adult M</option>
+                <option value="AL" ${player.jersey_size === 'AL' ? 'selected' : ''}>Adult L</option>
+                <option value="AXL" ${player.jersey_size === 'AXL' ? 'selected' : ''}>Adult XL</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">Short Size *</label>
+              <select onchange="updatePlayer(${index}, 'short_size', this.value)"
+                      class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm">
+                <option value="">Select...</option>
+                <option value="YS" ${player.short_size === 'YS' ? 'selected' : ''}>Youth S</option>
+                <option value="YM" ${player.short_size === 'YM' ? 'selected' : ''}>Youth M</option>
+                <option value="YL" ${player.short_size === 'YL' ? 'selected' : ''}>Youth L</option>
+                <option value="YXL" ${player.short_size === 'YXL' ? 'selected' : ''}>Youth XL</option>
+                <option value="AS" ${player.short_size === 'AS' ? 'selected' : ''}>Adult S</option>
+                <option value="AM" ${player.short_size === 'AM' ? 'selected' : ''}>Adult M</option>
+                <option value="AL" ${player.short_size === 'AL' ? 'selected' : ''}>Adult L</option>
+                <option value="AXL" ${player.short_size === 'AXL' ? 'selected' : ''}>Adult XL</option>
+              </select>
+            </div>
+          </div>
+          
           <!-- Sport Selection -->
           <div class="border-t border-border pt-4 mt-4">
             <label class="block text-sm text-gray-400 mb-3">Select Sport(s) to Register *</label>
@@ -831,6 +866,8 @@
         grade: '',
         gender: '',
         school: '',
+        jersey_size: '',
+        short_size: '',
         has_medical_conditions: false,
         medical_conditions: '',
         medications: '',
@@ -875,6 +912,10 @@
             const p = players[i];
             if (!p.first_name || !p.last_name || !p.dob || !p.grade || !p.gender) {
               alert(`Please complete all required fields for Player ${i + 1}`);
+              return false;
+            }
+            if (!p.jersey_size || !p.short_size) {
+              alert(`Please select uniform sizes for ${p.first_name}`);
               return false;
             }
             if (Object.keys(p.sports).length === 0) {
@@ -1045,6 +1086,8 @@
               grade: parseInt(player.grade),
               gender: player.gender,
               school: player.school?.trim() || null,
+              jersey_size: player.jersey_size,
+              short_size: player.short_size,
               
               // Medical
               has_medical_conditions: player.has_medical_conditions,
@@ -1231,15 +1274,4 @@
         
       } catch (error) {
         console.error('Account creation error:', error);
-        alert('Error creating account: ' + error.message);
-        btn.disabled = false;
-        btn.textContent = 'Create Account';
-      }
-    }
-
-    function registerAnother() {
-      window.location.reload();
-    }
-  </script>
-</body>
-</html>
+    

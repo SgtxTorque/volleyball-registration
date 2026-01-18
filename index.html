@@ -59,6 +59,7 @@
     
     .returning-banner { background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); border: 1px solid rgba(16, 185, 129, 0.3); }
     .waitlist-banner { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05)); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .prefill-banner { background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05)); border: 1px solid rgba(59, 130, 246, 0.3); }
     
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #1f2937; }
@@ -114,6 +115,17 @@
         </div>
       </div>
     </header>
+    
+    <!-- URL Pre-fill Banner -->
+    <div id="prefill-banner" class="hidden max-w-2xl mx-auto px-4 pt-4">
+      <div class="prefill-banner rounded-xl p-4 flex items-start gap-3">
+        <span class="text-2xl">🔗</span>
+        <div>
+          <p class="font-semibold text-blue-400">Information Pre-filled</p>
+          <p class="text-sm text-gray-300 mt-1">We've filled in your details from your previous registration. Please review and update if needed.</p>
+        </div>
+      </div>
+    </div>
     
     <!-- Waitlist Banner -->
     <div id="waitlist-banner" class="hidden max-w-2xl mx-auto px-4 pt-4">
@@ -339,6 +351,10 @@
     let currentRegistrations = 0;
     let returningFamily = null;
     let previousPlayers = [];
+    
+    // URL Pre-fill data
+    let urlPrefillData = null;
+    let hasUrlPrefill = false;
 
     document.addEventListener('DOMContentLoaded', init);
 
@@ -347,6 +363,42 @@
         const params = new URLSearchParams(window.location.search);
         const orgSlug = params.get('org') || DEFAULT_ORG_SLUG;
         const seasonId = params.get('season');
+        
+        // ============================================
+        // URL PRE-FILL: Check for pre-fill parameters
+        // ============================================
+        if (params.get('prefill') === 'true') {
+          urlPrefillData = {
+            // Player info
+            first_name: params.get('first_name') || '',
+            last_name: params.get('last_name') || '',
+            dob: params.get('dob') || '',
+            gender: params.get('gender') || '',
+            grade: params.get('grade') || '',
+            school: params.get('school') || '',
+            jersey_size: params.get('jersey_size') || '',
+            shorts_size: params.get('shorts_size') || '',
+            // Parent info
+            parent_name: params.get('parent_name') || '',
+            parent_email: params.get('parent_email') || '',
+            parent_phone: params.get('parent_phone') || '',
+            // Address
+            address: params.get('address') || '',
+            city: params.get('city') || '',
+            state: params.get('state') || '',
+            zip: params.get('zip') || '',
+            // Emergency
+            emergency_name: params.get('emergency_name') || '',
+            emergency_phone: params.get('emergency_phone') || '',
+            emergency_relation: params.get('emergency_relation') || '',
+            // Medical
+            allergies: params.get('allergies') || '',
+            medical_conditions: params.get('medical_conditions') || '',
+            medications: params.get('medications') || '',
+          };
+          hasUrlPrefill = true;
+          console.log('URL pre-fill data detected:', urlPrefillData);
+        }
 
         // 1. Fetch Organization
         const { data: org, error: orgErr } = await db.from('organizations').select('*').eq('slug', orgSlug).single();
@@ -392,7 +444,31 @@
 
         buildContactForm();
         buildWaiversForm();
-        addPlayer();
+        
+        // Add first player (with URL pre-fill if available)
+        if (hasUrlPrefill && urlPrefillData.first_name) {
+          // Create prefill object that matches player data structure
+          const playerPrefill = {
+            first_name: urlPrefillData.first_name,
+            last_name: urlPrefillData.last_name,
+            dob: urlPrefillData.dob,
+            gender: urlPrefillData.gender,
+            grade: urlPrefillData.grade,
+            school: urlPrefillData.school,
+            uniform_size_jersey: urlPrefillData.jersey_size,
+            uniform_size_shorts: urlPrefillData.shorts_size,
+          };
+          addPlayer(playerPrefill);
+          document.getElementById('prefill-banner').classList.remove('hidden');
+        } else {
+          addPlayer();
+        }
+        
+        // Apply URL pre-fill to contact form
+        if (hasUrlPrefill) {
+          applyUrlPrefillToContactForm();
+        }
+        
         document.getElementById('signature-date').textContent = new Date().toLocaleDateString();
 
         if (isWaitlistMode) {
@@ -410,6 +486,41 @@
         console.error('Init error:', err);
         showError('Error', 'Something went wrong. Please try again.');
       }
+    }
+    
+    // ============================================
+    // URL PRE-FILL: Apply to contact form
+    // ============================================
+    function applyUrlPrefillToContactForm() {
+      if (!urlPrefillData) return;
+      
+      // Parent info
+      setFieldValue('parent1_name', urlPrefillData.parent_name);
+      setFieldValue('parent1_email', urlPrefillData.parent_email);
+      setFieldValue('parent1_phone', urlPrefillData.parent_phone);
+      
+      // Address
+      setFieldValue('address', urlPrefillData.address);
+      setFieldValue('city', urlPrefillData.city);
+      setFieldValue('state', urlPrefillData.state);
+      setFieldValue('zip', urlPrefillData.zip);
+      
+      // Emergency contact
+      setFieldValue('emergency_name', urlPrefillData.emergency_name);
+      setFieldValue('emergency_phone', urlPrefillData.emergency_phone);
+      setFieldValue('emergency_relation', urlPrefillData.emergency_relation);
+      
+      // Medical
+      setFieldValue('allergies', urlPrefillData.allergies);
+      setFieldValue('medical_conditions', urlPrefillData.medical_conditions);
+      setFieldValue('medications', urlPrefillData.medications);
+      
+      // Also pre-fill signature with parent name
+      if (urlPrefillData.parent_name) {
+        setFieldValue('signature-input', urlPrefillData.parent_name);
+      }
+      
+      console.log('URL pre-fill applied to contact form');
     }
 
     async function checkCapacity() {
@@ -434,9 +545,15 @@
       }
     }
 
-    // RETURNING FAMILY
+    // RETURNING FAMILY (email-based lookup)
     async function checkReturningFamily(email) {
       if (!email || email.length < 5) return;
+      
+      // Skip if we already have URL pre-fill
+      if (hasUrlPrefill) {
+        console.log('Skipping email lookup - URL pre-fill already applied');
+        return;
+      }
 
       const { data: prevPlayers, error } = await db.from('players').select('*')
         .eq('parent_email', email.toLowerCase()).order('created_at', { ascending: false }).limit(10);
@@ -516,12 +633,17 @@
 
       const playerFields = formConfig.player || getDefaultFormConfig().player;
       
+      // Determine if this is a returning player or URL pre-fill
+      const isReturning = prefillData && prefillData.id; // Has database ID = returning player
+      const isPrefilled = prefillData && !prefillData.id; // No ID but has data = URL pre-fill
+      
       let html = `
         <div id="${playerId}" class="player-card card rounded-xl p-5">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold flex items-center gap-2">
               <span class="text-xl">${sport?.icon || '🏐'}</span> Player ${playerNum}
-              ${prefillData ? '<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full ml-2">Returning</span>' : ''}
+              ${isReturning ? '<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full ml-2">Returning</span>' : ''}
+              ${isPrefilled ? '<span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full ml-2">Pre-filled</span>' : ''}
             </h3>
             ${playerNum > 1 ? `<button onclick="removePlayer('${playerId}')" class="text-red-400 text-sm hover:text-red-300">Remove</button>` : ''}
           </div>
@@ -590,7 +712,8 @@
       document.querySelectorAll('#players-list .player-card').forEach((card, i) => {
         const h3 = card.querySelector('h3');
         const isRet = h3.innerHTML.includes('Returning');
-        h3.innerHTML = `<span class="text-xl">${sport?.icon || '🏐'}</span> Player ${i + 1}${isRet ? '<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full ml-2">Returning</span>' : ''}`;
+        const isPre = h3.innerHTML.includes('Pre-filled');
+        h3.innerHTML = `<span class="text-xl">${sport?.icon || '🏐'}</span> Player ${i + 1}${isRet ? '<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full ml-2">Returning</span>' : ''}${isPre ? '<span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full ml-2">Pre-filled</span>' : ''}`;
       });
       document.getElementById('add-player-btn').classList.remove('hidden');
     }

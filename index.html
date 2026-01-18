@@ -3,581 +3,1267 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Player Registration - Black Hornets</title>
+  <title>Registration</title>
+  <meta name="description" content="Player Registration">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            dark: '#0a0a0a',
-            card: '#1a1a1a',
-            border: '#333',
-            gold: '#FFD700',
-            success: '#34C759',
-            warning: '#FF9500',
-            danger: '#FF3B30',
-            info: '#5AC8FA',
-          }
-        }
-      }
-    }
-  </script>
   <style>
-    input, select, textarea { -webkit-appearance: none; -moz-appearance: none; appearance: none; }
+    :root {
+      --primary: #8B5CF6;
+      --primary-dark: #7C3AED;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #EF4444;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif; }
+    .bg-primary { background-color: var(--primary); }
+    .bg-primary-dark { background-color: var(--primary-dark); }
+    .text-primary { color: var(--primary); }
+    .border-primary { border-color: var(--primary); }
+    .ring-primary { --tw-ring-color: var(--primary); }
+    
+    input, select, textarea { 
+      -webkit-appearance: none; 
+      -moz-appearance: none; 
+      appearance: none; 
+    }
     input[type="checkbox"] {
-      -webkit-appearance: none; appearance: none; background-color: #1a1a1a;
-      border: 2px solid #555; border-radius: 4px; width: 22px; height: 22px;
-      cursor: pointer; position: relative; flex-shrink: 0;
+      -webkit-appearance: none; 
+      appearance: none; 
+      background-color: #1f2937;
+      border: 2px solid #4b5563; 
+      border-radius: 4px; 
+      width: 20px; 
+      height: 20px;
+      cursor: pointer; 
+      position: relative; 
+      flex-shrink: 0;
+      transition: all 0.15s ease;
     }
-    input[type="checkbox"]:checked { background-color: #FFD700; border-color: #FFD700; }
+    input[type="checkbox"]:checked { 
+      background-color: var(--primary); 
+      border-color: var(--primary); 
+    }
     input[type="checkbox"]:checked::after {
-      content: ''; position: absolute; left: 6px; top: 2px; width: 6px; height: 12px;
-      border: solid #0a0a0a; border-width: 0 3px 3px 0; transform: rotate(45deg);
+      content: ''; 
+      position: absolute; 
+      left: 5px; 
+      top: 1px; 
+      width: 6px; 
+      height: 11px;
+      border: solid white; 
+      border-width: 0 2px 2px 0; 
+      transform: rotate(45deg);
     }
-    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
-    .step-dot.active { background-color: #FFD700; }
-    .step-dot.completed { background-color: #34C759; }
-    .player-card, .signed-container, .season-select-container { animation: slideIn 0.3s ease; }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .sport-checkbox { transition: all 0.2s ease; }
-    .sport-checkbox:hover { border-color: #FFD700; }
-    .sport-checkbox.checked { border-color: #34C759; background-color: rgba(52, 199, 89, 0.1); }
+    input[type="date"]::-webkit-calendar-picker-indicator { 
+      filter: invert(1); 
+      cursor: pointer;
+    }
+    
+    .step-indicator { transition: all 0.3s ease; }
+    .step-indicator.active { 
+      background-color: var(--primary); 
+      color: white;
+      transform: scale(1.1);
+    }
+    .step-indicator.completed { 
+      background-color: var(--success); 
+      color: white; 
+    }
+    
+    .fade-in { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { 
+      from { opacity: 0; transform: translateY(15px); } 
+      to { opacity: 1; transform: translateY(0); } 
+    }
+    
+    .field-input {
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .field-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      outline: none;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      transition: all 0.2s ease;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .card {
+      background: linear-gradient(to bottom, #1f2937, #111827);
+      border: 1px solid #374151;
+    }
+    
+    .waiver-card {
+      transition: all 0.2s ease;
+    }
+    .waiver-card:hover {
+      border-color: #6b7280;
+    }
+    .waiver-card.checked {
+      border-color: var(--success);
+      background-color: rgba(16, 185, 129, 0.05);
+    }
+    
+    .player-card {
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #1f2937; }
+    ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+
+    /* Signature canvas */
     .signature-canvas { touch-action: none; cursor: crosshair; }
   </style>
 </head>
-<body class="bg-dark min-h-screen text-white">
+<body class="bg-gray-900 min-h-screen text-white">
   
-  <div id="loading" class="min-h-screen flex items-center justify-center">
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="min-h-screen flex items-center justify-center">
     <div class="text-center">
-      <div class="w-12 h-12 border-4 border-gold border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <div class="w-14 h-14 border-4 border-t-transparent rounded-full animate-spin mx-auto mb-4" style="border-color: var(--primary); border-top-color: transparent;"></div>
       <p class="text-gray-400">Loading registration...</p>
     </div>
   </div>
 
-  <div id="no-sports" class="min-h-screen flex items-center justify-center p-4 hidden">
-    <div class="text-center">
-      <div class="text-6xl mb-4">&#9888;</div>
-      <h1 class="text-2xl font-bold mb-2">Registration Unavailable</h1>
-      <p class="text-gray-400">There are no sports open for registration at this time.</p>
+  <!-- Error Screen -->
+  <div id="error-screen" class="min-h-screen flex items-center justify-center p-4 hidden">
+    <div class="text-center max-w-md">
+      <div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+        <span class="text-4xl">😕</span>
+      </div>
+      <h1 id="error-title" class="text-2xl font-bold mb-3">Registration Unavailable</h1>
+      <p id="error-message" class="text-gray-400 mb-6">This registration link may be invalid or expired.</p>
+      <a href="/" class="text-primary hover:underline">← Go Home</a>
     </div>
   </div>
 
-  <div id="success" class="min-h-screen p-4 hidden">
-    <div class="max-w-md mx-auto py-8">
-      <div class="text-center mb-6">
-        <div class="w-20 h-20 bg-success rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-        </div>
-        <h1 class="text-2xl font-bold mb-2">Registration Complete!</h1>
-        <p class="text-gray-400">Welcome to Black Hornets!</p>
+  <!-- Registration Closed Screen -->
+  <div id="closed-screen" class="min-h-screen flex items-center justify-center p-4 hidden">
+    <div class="text-center max-w-md">
+      <div class="w-20 h-20 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+        <span class="text-4xl">📅</span>
       </div>
-      
-      <div id="registered-players-summary" class="bg-card rounded-2xl p-6 mb-6">
-        <h2 class="text-lg font-bold mb-4 text-gold">Registrations Submitted</h2>
-        <div id="registered-players-list" class="space-y-3"></div>
-      </div>
-
-      <div id="account-creation-section" class="bg-card rounded-2xl p-6 mb-6">
-        <h2 class="text-lg font-bold mb-2">Create Your Parent Account</h2>
-        <p class="text-gray-400 text-sm mb-4">Track progress, view schedules, and manage payments.</p>
-        <div id="account-form">
-          <div class="bg-dark rounded-xl p-4 mb-4">
-            <p class="text-sm text-gray-400">Account Email</p>
-            <p id="account-email-display" class="font-medium text-gold"></p>
-          </div>
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Create Password *</label>
-              <input type="password" id="account_password" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Minimum 8 characters" minlength="8">
-            </div>
-            <div>
-              <label class="block text-sm text-gray-400 mb-2">Confirm Password *</label>
-              <input type="password" id="account_password_confirm" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Confirm password">
-            </div>
-          </div>
-          <button id="create-account-btn" onclick="createAccount()" class="w-full bg-gold text-dark font-bold py-4 rounded-xl mt-4">Create Account</button>
-          <button onclick="skipAccountCreation()" class="w-full text-gray-400 text-sm py-3 mt-2">Skip for now</button>
-        </div>
-        <div id="account-created" class="hidden text-center py-4">
-          <div class="w-12 h-12 bg-success rounded-full flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-          </div>
-          <p class="font-bold text-success">Account Created!</p>
-          <p class="text-gray-400 text-sm mt-1">Check your email to verify, then download VolleyBrain app.</p>
-        </div>
-      </div>
-      
-      <div class="bg-card rounded-2xl p-6 mb-6">
-        <h2 class="text-lg font-bold mb-4">What's Next?</h2>
-        <div class="space-y-4">
-          <div class="flex gap-3"><div class="w-8 h-8 bg-gold text-dark rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">1</div><div><p class="font-medium">Registration Review</p><p class="text-gray-400 text-sm">Our team will review your registration</p></div></div>
-          <div class="flex gap-3"><div class="w-8 h-8 bg-card border border-border rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">2</div><div><p class="font-medium">Payment</p><p class="text-gray-400 text-sm">Submit via Venmo, Zelle, or Cash App</p></div></div>
-          <div class="flex gap-3"><div class="w-8 h-8 bg-card border border-border rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">3</div><div><p class="font-medium">Team Assignment</p><p class="text-gray-400 text-sm">You'll be notified of your placement</p></div></div>
-        </div>
-      </div>
-
-      <div class="bg-card rounded-2xl p-6 mb-6">
-        <h2 class="text-lg font-bold mb-4">Fee Summary</h2>
-        <div id="fee-breakdown" class="space-y-2 text-sm"></div>
-      </div>
-      
-      <div class="bg-card rounded-2xl p-6">
-        <h2 class="text-lg font-bold mb-4">Payment Methods</h2>
-        <div class="space-y-4">
-          <div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center font-bold text-sm">V</div><div><p class="font-medium">Venmo</p><p class="text-gold">@BlackHornetsVB</p></div></div>
-          <div class="flex items-center gap-3"><div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold text-sm">Z</div><div><p class="font-medium">Zelle</p><p class="text-gold">blackhornetsvolleyball@gmail.com</p></div></div>
-          <div class="flex items-center gap-3"><div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center font-bold text-sm">$</div><div><p class="font-medium">Cash App</p><p class="text-gold">$BlackHornetsVB</p></div></div>
-        </div>
-        <p class="text-gray-400 text-sm mt-4">Include player name(s) and sport(s) in memo.</p>
-      </div>
-      <p class="text-center text-gray-400 text-sm mt-6">Your coach will be in touch soon!</p>
-      <button onclick="registerAnother()" class="w-full bg-card border border-border text-white font-bold py-4 rounded-xl mt-6">Register Another Family</button>
+      <h1 class="text-2xl font-bold mb-3">Registration Closed</h1>
+      <p class="text-gray-400 mb-2">Registration for this season is currently closed.</p>
+      <p id="closed-dates" class="text-gray-500 text-sm"></p>
     </div>
   </div>
 
-  <div id="form-container" class="min-h-screen p-4 hidden">
-    <div class="max-w-lg mx-auto">
-      <div class="text-center py-6">
-        <div class="w-16 h-16 bg-gold rounded-full flex items-center justify-center mx-auto mb-3"><span class="text-2xl">🏆</span></div>
-        <h1 class="text-2xl font-bold">Black Hornets Athletics</h1>
-        <p class="text-gray-400 mt-1">Player Registration</p>
+  <!-- Main Registration Container -->
+  <div id="registration-container" class="hidden">
+    
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-gray-900/95 backdrop-blur border-b border-gray-800">
+      <div class="max-w-2xl mx-auto px-4 py-4">
+        <div class="flex items-center gap-4">
+          <div id="org-logo-container">
+            <img id="org-logo" src="" alt="" class="w-14 h-14 rounded-xl object-cover hidden">
+            <div id="org-logo-fallback" class="w-14 h-14 rounded-xl bg-gray-800 flex items-center justify-center">
+              <span id="org-icon" class="text-2xl">🏆</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h1 id="org-name" class="text-lg font-bold"></h1>
+            <p id="season-info" class="text-sm text-gray-400"></p>
+          </div>
+        </div>
       </div>
+    </header>
 
-      <div class="flex justify-center gap-2 mb-8">
-        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="1"></div>
-        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="2"></div>
-        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="3"></div>
-        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="4"></div>
-        <div class="step-dot w-3 h-3 rounded-full bg-border" data-step="5"></div>
+    <!-- Progress Bar -->
+    <div class="max-w-2xl mx-auto px-4 py-5">
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col items-center">
+          <div id="step-1-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">1</div>
+          <span class="text-xs mt-1.5 text-gray-500">Players</span>
+        </div>
+        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-1" class="h-full bg-primary rounded transition-all duration-300" style="width: 0%"></div></div>
+        <div class="flex flex-col items-center">
+          <div id="step-2-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">2</div>
+          <span class="text-xs mt-1.5 text-gray-500">Contact</span>
+        </div>
+        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-2" class="h-full bg-primary rounded transition-all duration-300" style="width: 0%"></div></div>
+        <div class="flex flex-col items-center">
+          <div id="step-3-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">3</div>
+          <span class="text-xs mt-1.5 text-gray-500">Waivers</span>
+        </div>
+        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-3" class="h-full bg-primary rounded transition-all duration-300" style="width: 0%"></div></div>
+        <div class="flex flex-col items-center">
+          <div id="step-4-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">4</div>
+          <span class="text-xs mt-1.5 text-gray-500">Review</span>
+        </div>
       </div>
+    </div>
 
-      <div id="step-1" class="step-content">
-        <div class="bg-card rounded-2xl p-6">
-          <h2 class="text-lg font-bold mb-1">Player Information</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 1 of 5 • Add all children and select sports</p>
-          <div id="players-container" class="space-y-4"></div>
-          <button onclick="addPlayer()" id="add-player-btn" class="w-full bg-dark border-2 border-dashed border-border text-gray-400 font-medium py-4 rounded-xl mt-4 flex items-center justify-center gap-2 hover:border-gold hover:text-gold transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            Add Another Child
+    <!-- Form Steps -->
+    <main class="max-w-2xl mx-auto px-4 pb-8">
+      
+      <!-- Step 1: Players -->
+      <section id="step-1" class="fade-in">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold">Player Information</h2>
+          <p class="text-gray-400 mt-1">Add each child you'd like to register.</p>
+        </div>
+        
+        <div id="players-list" class="space-y-4"></div>
+        
+        <button id="add-player-btn" onclick="addPlayer()" class="w-full mt-4 py-4 border-2 border-dashed border-gray-600 rounded-xl text-gray-400 hover:border-primary hover:text-primary transition-colors flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+          Add Another Player
+        </button>
+        
+        <div class="mt-8">
+          <button onclick="goToStep(2)" class="w-full btn-primary py-4 rounded-xl font-semibold text-white">
+            Continue to Contact Info →
           </button>
         </div>
-        <button onclick="nextStep(1)" class="w-full bg-gold text-dark font-bold py-4 rounded-xl mt-6">Continue</button>
-      </div>
+      </section>
 
-      <div id="step-2" class="step-content hidden">
-        <div class="bg-card rounded-2xl p-6">
-          <h2 class="text-lg font-bold mb-1">Parent/Guardian Information</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 2 of 5 • Applies to all players</p>
-          <div class="space-y-4">
-            <div><label class="block text-sm text-gray-400 mb-2">Parent/Guardian Name *</label><input type="text" id="parent_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white"></div>
-            <div><label class="block text-sm text-gray-400 mb-2">Phone *</label><input type="tel" id="parent_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="000-000-0000" oninput="formatPhone(this)" maxlength="12"></div>
-            <div><label class="block text-sm text-gray-400 mb-2">Email *</label><input type="email" id="parent_email" class="w-full bg-dark border border-border rounded-xl p-4 text-white"></div>
-            <div><label class="block text-sm text-gray-400 mb-2">Street Address *</label><input type="text" id="street" class="w-full bg-dark border border-border rounded-xl p-4 text-white"></div>
-            <div class="grid grid-cols-3 gap-3">
-              <div class="col-span-2"><label class="block text-sm text-gray-400 mb-2">City *</label><input type="text" id="city" class="w-full bg-dark border border-border rounded-xl p-4 text-white"></div>
-              <div><label class="block text-sm text-gray-400 mb-2">State *</label><select id="state" class="w-full bg-dark border border-border rounded-xl p-4 text-white"><option value="TX">TX</option><option value="OK">OK</option><option value="AR">AR</option><option value="LA">LA</option><option value="NM">NM</option></select></div>
-            </div>
-            <div class="w-32"><label class="block text-sm text-gray-400 mb-2">ZIP *</label><input type="text" id="zip" class="w-full bg-dark border border-border rounded-xl p-4 text-white" maxlength="5"></div>
-            <div class="border-t border-border pt-4 mt-4">
-              <p class="text-sm text-gray-400 mb-4">Secondary Parent/Guardian (Optional)</p>
-              <div class="space-y-4">
-                <div><label class="block text-sm text-gray-400 mb-2">Name</label><input type="text" id="parent_2_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white"></div>
-                <div><label class="block text-sm text-gray-400 mb-2">Phone</label><input type="tel" id="parent_2_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="000-000-0000" oninput="formatPhone(this)" maxlength="12"></div>
-                <div><label class="block text-sm text-gray-400 mb-2">Email</label><input type="email" id="parent_2_email" class="w-full bg-dark border border-border rounded-xl p-4 text-white"></div>
-              </div>
-            </div>
-          </div>
+      <!-- Step 2: Contact Information -->
+      <section id="step-2" class="fade-in hidden">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold">Contact Information</h2>
+          <p class="text-gray-400 mt-1">Parent/guardian details for all players.</p>
         </div>
-        <div class="flex gap-4 mt-6">
-          <button onclick="prevStep(2)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">Back</button>
-          <button onclick="nextStep(2)" class="flex-1 bg-gold text-dark font-bold py-4 rounded-xl">Continue</button>
+        
+        <div id="contact-form" class="space-y-6"></div>
+        
+        <div class="mt-8 flex gap-4">
+          <button onclick="goToStep(1)" class="flex-1 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
+            ← Back
+          </button>
+          <button onclick="goToStep(3)" class="flex-1 btn-primary py-4 rounded-xl font-semibold text-white">
+            Continue →
+          </button>
         </div>
-      </div>
+      </section>
 
-      <div id="step-3" class="step-content hidden">
-        <div class="bg-card rounded-2xl p-6">
-          <h2 class="text-lg font-bold mb-1">Emergency Contact</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 3 of 5 • Someone other than parent</p>
-          <div class="space-y-4">
-            <div><label class="block text-sm text-gray-400 mb-2">Emergency Contact Name *</label><input type="text" id="emergency_name" class="w-full bg-dark border border-border rounded-xl p-4 text-white"></div>
-            <div><label class="block text-sm text-gray-400 mb-2">Emergency Phone *</label><input type="tel" id="emergency_phone" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="000-000-0000" oninput="formatPhone(this)" maxlength="12"></div>
-            <div><label class="block text-sm text-gray-400 mb-2">Relationship *</label><select id="emergency_relation" class="w-full bg-dark border border-border rounded-xl p-4 text-white"><option value="">Select...</option><option value="Grandparent">Grandparent</option><option value="Aunt/Uncle">Aunt/Uncle</option><option value="Family Friend">Family Friend</option><option value="Neighbor">Neighbor</option><option value="Other">Other</option></select></div>
-          </div>
+      <!-- Step 3: Waivers -->
+      <section id="step-3" class="fade-in hidden">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold">Waivers & Agreements</h2>
+          <p class="text-gray-400 mt-1">Please review and accept each waiver.</p>
         </div>
-        <div class="flex gap-4 mt-6">
-          <button onclick="prevStep(3)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">Back</button>
-          <button onclick="nextStep(3)" class="flex-1 bg-gold text-dark font-bold py-4 rounded-xl">Continue</button>
+        
+        <div id="waivers-form" class="space-y-4"></div>
+        
+        <!-- Signature -->
+        <div class="mt-6 card rounded-xl p-5">
+          <h3 class="font-semibold mb-3">Electronic Signature</h3>
+          <p class="text-gray-400 text-sm mb-4">By typing your name below, you agree to all waivers listed above.</p>
+          <input 
+            type="text" 
+            id="signature-input" 
+            placeholder="Type your full legal name"
+            class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white"
+          >
+          <p class="text-xs text-gray-500 mt-2">Date: <span id="signature-date"></span></p>
         </div>
-      </div>
+        
+        <div class="mt-8 flex gap-4">
+          <button onclick="goToStep(2)" class="flex-1 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
+            ← Back
+          </button>
+          <button onclick="goToStep(4)" class="flex-1 btn-primary py-4 rounded-xl font-semibold text-white">
+            Continue →
+          </button>
+        </div>
+      </section>
 
-      <div id="step-4" class="step-content hidden">
-        <div class="bg-card rounded-2xl p-6">
-          <h2 class="text-lg font-bold mb-1">Waivers & Agreements</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 4 of 5 • Please read and agree</p>
-          <div class="space-y-4">
-            <div class="bg-dark rounded-xl p-4"><div class="flex items-start gap-3"><input type="checkbox" id="waiver_liability" class="mt-1"><div><p class="font-medium">Liability Waiver *</p><p class="text-gray-400 text-sm mt-1">I understand participation involves risk of injury. I release Black Hornets Athletics from liability.</p></div></div></div>
-            <div class="bg-dark rounded-xl p-4"><div class="flex items-start gap-3"><input type="checkbox" id="waiver_photo" class="mt-1"><div><p class="font-medium">Photo/Video Release (Optional)</p><p class="text-gray-400 text-sm mt-1">I grant permission to use photos/videos for promotional purposes.</p></div></div></div>
-            <div class="bg-dark rounded-xl p-4"><div class="flex items-start gap-3"><input type="checkbox" id="waiver_conduct" class="mt-1"><div><p class="font-medium">Code of Conduct *</p><p class="text-gray-400 text-sm mt-1">I agree to uphold good sportsmanship and respect coaches and officials.</p></div></div></div>
+      <!-- Step 4: Review & Submit -->
+      <section id="step-4" class="fade-in hidden">
+        <div class="mb-6">
+          <h2 class="text-2xl font-bold">Review & Submit</h2>
+          <p class="text-gray-400 mt-1">Please confirm your registration details.</p>
+        </div>
+        
+        <div id="review-content" class="space-y-4"></div>
+        
+        <!-- Fee Summary -->
+        <div class="card rounded-xl p-5 mt-6">
+          <h3 class="font-semibold mb-4">💰 Fee Summary</h3>
+          <div id="fee-breakdown" class="space-y-2 text-sm"></div>
+          <div class="border-t border-gray-700 mt-4 pt-4 flex justify-between items-center">
+            <span class="font-medium">Estimated Total</span>
+            <span id="total-amount" class="text-2xl font-bold text-primary"></span>
           </div>
+          <p class="text-xs text-gray-500 mt-2">Payment instructions will be provided after approval.</p>
         </div>
-        <div class="flex gap-4 mt-6">
-          <button onclick="prevStep(4)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">Back</button>
-          <button onclick="nextStep(4)" class="flex-1 bg-gold text-dark font-bold py-4 rounded-xl">Continue</button>
+        
+        <div class="mt-8 flex gap-4">
+          <button onclick="goToStep(3)" class="flex-1 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
+            ← Back
+          </button>
+          <button id="submit-btn" onclick="submitRegistration()" class="flex-1 btn-primary py-4 rounded-xl font-semibold text-white">
+            ✓ Submit Registration
+          </button>
         </div>
-      </div>
+      </section>
+    </main>
 
-      <div id="step-5" class="step-content hidden">
-        <div class="bg-card rounded-2xl p-6">
-          <h2 class="text-lg font-bold mb-1">Review & Sign</h2>
-          <p class="text-gray-400 text-sm mb-6">Step 5 of 5 • Confirm your registration</p>
-          <div class="space-y-4 mb-6">
-            <div id="review-players" class="bg-dark rounded-xl p-4"></div>
-            <div class="bg-dark rounded-xl p-4"><p class="text-sm text-gray-400">Parent/Guardian</p><p id="review-parent-name" class="font-medium"></p><p id="review-parent-contact" class="text-sm text-gray-400"></p></div>
-            <div class="bg-dark rounded-xl p-4"><p class="text-sm text-gray-400">Estimated Fees</p><p id="review-total" class="font-bold text-gold text-xl"></p><p class="text-xs text-gray-500 mt-1">Fee details provided after team assignment</p></div>
-          </div>
-          <div id="signature-section">
-            <label class="block text-sm text-gray-400 mb-2">Parent/Guardian Signature *</label>
-            <div id="signature-unsigned">
-              <button onclick="openSignaturePad()" class="w-full bg-dark border-2 border-dashed border-gold text-gold font-medium py-8 rounded-xl flex flex-col items-center justify-center gap-2">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                <span>Tap to Sign</span>
-              </button>
-            </div>
-            <div id="signature-signed" class="hidden signed-container">
-              <div class="bg-dark border border-success rounded-xl p-4">
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-success text-sm font-medium flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Signed</span>
-                  <button onclick="clearSignature()" class="text-gray-400 text-sm">Clear</button>
-                </div>
-                <img id="signature-preview" class="w-full h-20 object-contain bg-white rounded" alt="Signature">
-                <p id="signature-name-display" class="text-center text-sm text-gray-400 mt-2"></p>
-              </div>
-            </div>
-            <input type="hidden" id="signature_data">
-            <input type="hidden" id="waiver_signed_by">
-            <input type="hidden" id="waiver_signed_date">
-          </div>
-        </div>
-        <div class="flex gap-4 mt-6">
-          <button onclick="prevStep(5)" class="flex-1 bg-card text-white font-bold py-4 rounded-xl border border-border">Back</button>
-          <button onclick="submitRegistration()" id="submit-btn" class="flex-1 bg-gold text-dark font-bold py-4 rounded-xl">Submit Registration</button>
-        </div>
-      </div>
-    </div>
+    <!-- Footer -->
+    <footer class="max-w-2xl mx-auto px-4 py-6 text-center">
+      <p class="text-gray-600 text-sm">
+        Powered by <span class="text-gray-500">VolleyBrain</span>
+      </p>
+    </footer>
   </div>
 
-  <div id="signature-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-card rounded-2xl w-full max-w-md overflow-hidden">
-      <div class="p-4 border-b border-border flex justify-between items-center">
-        <h3 class="font-bold text-lg">Sign Below</h3>
-        <button onclick="closeSignaturePad()" class="text-gray-400 p-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+  <!-- Success Screen -->
+  <div id="success-screen" class="min-h-screen p-4 hidden">
+    <div class="max-w-md mx-auto py-8">
+      <!-- Success Header -->
+      <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-bold mb-2">Registration Submitted!</h1>
+        <p id="success-welcome" class="text-gray-400"></p>
       </div>
-      <div class="p-4">
-        <div class="mb-4"><label class="block text-sm text-gray-400 mb-2">Print Your Full Name *</label><input type="text" id="signature_name_input" class="w-full bg-dark border border-border rounded-xl p-4 text-white" placeholder="Your full legal name"></div>
-        <div class="bg-white rounded-xl overflow-hidden mb-4"><canvas id="signature-canvas" class="signature-canvas w-full" height="200"></canvas></div>
-        <div class="flex gap-3">
-          <button onclick="clearCanvas()" class="flex-1 bg-dark text-white font-medium py-3 rounded-xl border border-border">Clear</button>
-          <button onclick="saveSignature()" class="flex-1 bg-gold text-dark font-bold py-3 rounded-xl">Confirm Signature</button>
+      
+      <!-- Registered Players -->
+      <div class="card rounded-2xl p-6 mb-6">
+        <h2 class="font-bold mb-4 text-primary">Players Registered</h2>
+        <div id="success-players" class="space-y-3"></div>
+      </div>
+      
+      <!-- What's Next -->
+      <div class="card rounded-2xl p-6 mb-6">
+        <h2 class="font-bold mb-4">What's Next?</h2>
+        <div class="space-y-4">
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+            <div>
+              <p class="font-medium">Registration Review</p>
+              <p class="text-gray-400 text-sm">Our team will review your registration</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
+            <div>
+              <p class="font-medium">Payment</p>
+              <p class="text-gray-400 text-sm">You'll receive payment instructions via email</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
+            <div>
+              <p class="font-medium">Team Assignment</p>
+              <p class="text-gray-400 text-sm">You'll be notified of your team placement</p>
+            </div>
+          </div>
         </div>
       </div>
+      
+      <!-- Payment Methods (if configured) -->
+      <div id="payment-methods-section" class="card rounded-2xl p-6 mb-6 hidden">
+        <h2 class="font-bold mb-4">Payment Options</h2>
+        <div id="payment-methods-list" class="space-y-3"></div>
+        <p class="text-gray-500 text-sm mt-4">Include player name(s) in payment memo.</p>
+      </div>
+      
+      <!-- Contact Info -->
+      <div id="org-contact-section" class="card rounded-2xl p-6 hidden">
+        <h2 class="font-bold mb-4">Questions?</h2>
+        <div id="org-contact-info"></div>
+      </div>
+      
+      <button onclick="location.reload()" class="w-full mt-6 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
+        Register Another Family
+      </button>
     </div>
   </div>
 
   <script>
+    // ============================================
+    // CONFIGURATION
+    // ============================================
     const SUPABASE_URL = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTEwODMsImV4cCI6MjA4Mjc4NzA4M30.k643d5gVS2uWWe_QgSvAMjWVuRgBIU2wI0bR38vYDCc';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+    
+    // Initialize Supabase
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let allSports = [], allSeasons = [], players = [], currentStep = 1;
-    let signatureCanvas = null, signatureCtx = null, isDrawing = false, lastX = 0, lastY = 0;
+    // ============================================
+    // STATE
+    // ============================================
+    let organization = null;
+    let season = null;
+    let sport = null;
+    let formConfig = {};
+    let orgWaivers = [];
+    let customQuestions = [];
+    let players = [];
+    let currentStep = 1;
+    let maxPlayersPerReg = 5;
 
+    // ============================================
+    // INITIALIZATION
+    // ============================================
     document.addEventListener('DOMContentLoaded', init);
 
     async function init() {
       try {
-        const { data: sports, error: sportsError } = await db.from('sports').select('*').eq('is_active', true).order('sort_order');
-        if (sportsError) throw sportsError;
-        allSports = sports || [];
+        // Parse URL: /register/{org-slug} or /register/{org-slug}/{season-id}
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const orgSlug = pathParts[1] || getParam('org');
+        const seasonId = pathParts[2] || getParam('season');
 
-        const { data: seasons, error: seasonsError } = await db.from('seasons').select('*').eq('registration_open', true).order('created_at', { ascending: false });
-        if (seasonsError) throw seasonsError;
-        allSeasons = seasons || [];
-
-        const sportsWithSeasons = allSports.filter(sport => allSeasons.some(season => season.sport_id === sport.id));
-        document.getElementById('loading').classList.add('hidden');
-
-        if (sportsWithSeasons.length === 0) {
-          document.getElementById('no-sports').classList.remove('hidden');
-        } else {
-          document.getElementById('form-container').classList.remove('hidden');
-          initPlayers();
-          initSignatureCanvas();
-          updateStepDots();
+        if (!orgSlug) {
+          showError('Invalid Link', 'No organization specified. Please check your registration link.');
+          return;
         }
-      } catch (error) {
-        console.error('Error:', error);
-        document.getElementById('loading').innerHTML = `<div class="text-center"><p class="text-red-500">Failed to load registration.</p><p class="text-gray-400 mt-2">${error.message}</p></div>`;
+
+        // 1. Fetch Organization
+        const { data: org, error: orgErr } = await db
+          .from('organizations')
+          .select('*')
+          .eq('slug', orgSlug)
+          .single();
+
+        if (orgErr || !org) {
+          showError('Not Found', `Organization "${orgSlug}" was not found. Please check your link.`);
+          return;
+        }
+        organization = org;
+
+        // 2. Apply Branding
+        applyBranding(org);
+
+        // 3. Fetch Season(s)
+        let query = db
+          .from('seasons')
+          .select('*, sports(id, name, icon)')
+          .eq('organization_id', org.id)
+          .in('status', ['active', 'upcoming'])
+          .order('start_date', { ascending: true });
+
+        if (seasonId) {
+          query = query.eq('id', seasonId);
+        }
+
+        const { data: seasons, error: seasonErr } = await query;
+
+        if (seasonErr || !seasons?.length) {
+          showError('No Open Registration', 'There are currently no seasons open for registration.');
+          return;
+        }
+
+        // Pick season (specific or first active)
+        season = seasonId ? seasons[0] : (seasons.find(s => s.status === 'active') || seasons[0]);
+        sport = season.sports;
+
+        // Check registration dates
+        const now = new Date();
+        if (season.registration_opens && new Date(season.registration_opens) > now) {
+          showClosed(`Registration opens ${formatDate(season.registration_opens)}`);
+          return;
+        }
+        if (season.registration_closes && new Date(season.registration_closes) < now) {
+          showClosed(`Registration closed ${formatDate(season.registration_closes)}`);
+          return;
+        }
+
+        // 4. Load Form Configuration
+        formConfig = org.settings?.registration_fields || getDefaultFormConfig();
+        customQuestions = org.settings?.custom_questions || [];
+        maxPlayersPerReg = org.settings?.max_players_per_registration || 5;
+
+        // 5. Load Waivers
+        const waiverIds = org.settings?.selected_waivers || [];
+        if (waiverIds.length) {
+          const { data: waivers } = await db.from('waivers').select('*').in('id', waiverIds);
+          orgWaivers = waivers || [];
+        }
+
+        // 6. Initialize UI
+        document.getElementById('org-name').textContent = org.name;
+        document.getElementById('season-info').textContent = `${season.name}${sport ? ` • ${sport.name}` : ''}`;
+        document.title = `Registration - ${org.name}`;
+
+        // Logo
+        if (org.logo_url) {
+          document.getElementById('org-logo').src = org.logo_url;
+          document.getElementById('org-logo').classList.remove('hidden');
+          document.getElementById('org-logo-fallback').classList.add('hidden');
+        } else if (sport?.icon) {
+          document.getElementById('org-icon').textContent = sport.icon;
+        }
+
+        // Build forms
+        buildContactForm();
+        buildWaiversForm();
+        addPlayer(); // Add first player
+
+        // Set signature date
+        document.getElementById('signature-date').textContent = new Date().toLocaleDateString();
+
+        // Show form
+        document.getElementById('loading-screen').classList.add('hidden');
+        document.getElementById('registration-container').classList.remove('hidden');
+        updateProgress();
+
+      } catch (err) {
+        console.error('Init error:', err);
+        showError('Error', 'Something went wrong loading registration. Please try again.');
       }
     }
 
-    function initSignatureCanvas() {
-      signatureCanvas = document.getElementById('signature-canvas');
-      signatureCtx = signatureCanvas.getContext('2d');
-      signatureCanvas.addEventListener('mousedown', startDrawing);
-      signatureCanvas.addEventListener('mousemove', draw);
-      signatureCanvas.addEventListener('mouseup', stopDrawing);
-      signatureCanvas.addEventListener('mouseout', stopDrawing);
-      signatureCanvas.addEventListener('touchstart', handleTouchStart);
-      signatureCanvas.addEventListener('touchmove', handleTouchMove);
-      signatureCanvas.addEventListener('touchend', stopDrawing);
+    function getParam(name) {
+      return new URLSearchParams(window.location.search).get(name);
     }
 
-    function setupCanvas() {
-      const rect = signatureCanvas.getBoundingClientRect();
-      signatureCanvas.width = rect.width;
-      signatureCanvas.height = 200;
-      signatureCtx.strokeStyle = '#000';
-      signatureCtx.lineWidth = 2;
-      signatureCtx.lineCap = 'round';
-      signatureCtx.lineJoin = 'round';
-      signatureCtx.fillStyle = '#fff';
-      signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    function applyBranding(org) {
+      const primary = org.settings?.primary_color || '#8B5CF6';
+      document.documentElement.style.setProperty('--primary', primary);
+      
+      // Darken for hover state
+      const primaryDark = adjustColor(primary, -20);
+      document.documentElement.style.setProperty('--primary-dark', primaryDark);
     }
 
-    function startDrawing(e) { isDrawing = true; const rect = signatureCanvas.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top; }
-    function draw(e) { if (!isDrawing) return; e.preventDefault(); const rect = signatureCanvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top; signatureCtx.beginPath(); signatureCtx.moveTo(lastX, lastY); signatureCtx.lineTo(x, y); signatureCtx.stroke(); lastX = x; lastY = y; }
-    function handleTouchStart(e) { e.preventDefault(); const touch = e.touches[0]; const rect = signatureCanvas.getBoundingClientRect(); isDrawing = true; lastX = touch.clientX - rect.left; lastY = touch.clientY - rect.top; }
-    function handleTouchMove(e) { if (!isDrawing) return; e.preventDefault(); const touch = e.touches[0]; const rect = signatureCanvas.getBoundingClientRect(); const x = touch.clientX - rect.left; const y = touch.clientY - rect.top; signatureCtx.beginPath(); signatureCtx.moveTo(lastX, lastY); signatureCtx.lineTo(x, y); signatureCtx.stroke(); lastX = x; lastY = y; }
-    function stopDrawing() { isDrawing = false; }
-    function clearCanvas() { signatureCtx.fillStyle = '#fff'; signatureCtx.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height); }
-
-    function openSignaturePad() { document.getElementById('signature-modal').classList.remove('hidden'); setTimeout(setupCanvas, 100); }
-    function closeSignaturePad() { document.getElementById('signature-modal').classList.add('hidden'); }
-
-    function saveSignature() {
-      const name = document.getElementById('signature_name_input').value.trim();
-      if (!name) { alert('Please enter your full name'); return; }
-      const imageData = signatureCtx.getImageData(0, 0, signatureCanvas.width, signatureCanvas.height);
-      let hasDrawing = false;
-      for (let i = 0; i < imageData.data.length; i += 4) { if (imageData.data[i] < 250 || imageData.data[i+1] < 250 || imageData.data[i+2] < 250) { hasDrawing = true; break; } }
-      if (!hasDrawing) { alert('Please sign in the box'); return; }
-      const signatureData = signatureCanvas.toDataURL('image/png');
-      document.getElementById('signature_data').value = signatureData;
-      document.getElementById('waiver_signed_by').value = name;
-      document.getElementById('waiver_signed_date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('signature-preview').src = signatureData;
-      document.getElementById('signature-name-display').textContent = name + ' • ' + new Date().toLocaleDateString();
-      document.getElementById('signature-unsigned').classList.add('hidden');
-      document.getElementById('signature-signed').classList.remove('hidden');
-      closeSignaturePad();
+    function adjustColor(hex, amount) {
+      const num = parseInt(hex.replace('#', ''), 16);
+      const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+      const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+      const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+      return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
     }
 
-    function clearSignature() {
-      document.getElementById('signature_data').value = '';
-      document.getElementById('waiver_signed_by').value = '';
-      document.getElementById('waiver_signed_date').value = '';
-      document.getElementById('signature-unsigned').classList.remove('hidden');
-      document.getElementById('signature-signed').classList.add('hidden');
-      clearCanvas();
+    function showError(title, message) {
+      document.getElementById('loading-screen').classList.add('hidden');
+      document.getElementById('error-title').textContent = title;
+      document.getElementById('error-message').textContent = message;
+      document.getElementById('error-screen').classList.remove('hidden');
     }
 
-    function initPlayers() {
-      players = [{ first_name: '', last_name: '', dob: '', grade: '', gender: '', school: '', jersey_size: '', short_size: '', placement_preferences: '', has_medical_conditions: false, medical_conditions: '', medications: '', allergies: '', sports: {} }];
-      renderPlayers();
+    function showClosed(message) {
+      document.getElementById('loading-screen').classList.add('hidden');
+      document.getElementById('closed-dates').textContent = message;
+      document.getElementById('closed-screen').classList.remove('hidden');
     }
 
-    function renderPlayers() {
-      const container = document.getElementById('players-container');
-      container.innerHTML = '';
-      players.forEach((player, index) => {
-        const card = document.createElement('div');
-        card.className = 'player-card bg-dark rounded-xl p-4 border border-border';
-        card.innerHTML = createPlayerCardHTML(player, index);
-        container.appendChild(card);
+    function formatDate(dateStr) {
+      return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function getDefaultFormConfig() {
+      return {
+        player: {
+          first_name: { visible: true, required: true, label: 'First Name' },
+          last_name: { visible: true, required: true, label: 'Last Name' },
+          dob: { visible: true, required: true, label: 'Date of Birth' },
+          gender: { visible: true, required: true, label: 'Gender' },
+          grade: { visible: true, required: true, label: 'Grade' },
+          school: { visible: true, required: false, label: 'School' },
+          jersey_size: { visible: true, required: true, label: 'Jersey Size' },
+          shorts_size: { visible: false, required: false, label: 'Shorts Size' },
+        },
+        parent: {
+          parent1_name: { visible: true, required: true, label: 'Parent/Guardian Name' },
+          parent1_email: { visible: true, required: true, label: 'Email' },
+          parent1_phone: { visible: true, required: true, label: 'Phone' },
+          parent2_name: { visible: true, required: false, label: 'Parent 2 Name' },
+          parent2_email: { visible: true, required: false, label: 'Parent 2 Email' },
+          parent2_phone: { visible: true, required: false, label: 'Parent 2 Phone' },
+          address: { visible: true, required: false, label: 'Street Address' },
+          city: { visible: true, required: false, label: 'City' },
+          state: { visible: true, required: false, label: 'State' },
+          zip: { visible: true, required: false, label: 'ZIP Code' },
+        },
+        emergency: {
+          name: { visible: true, required: true, label: 'Emergency Contact' },
+          phone: { visible: true, required: true, label: 'Emergency Phone' },
+          relation: { visible: true, required: true, label: 'Relationship' },
+        },
+        medical: {
+          allergies: { visible: true, required: false, label: 'Allergies' },
+          medical_conditions: { visible: true, required: false, label: 'Medical Conditions' },
+          medications: { visible: true, required: false, label: 'Medications' },
+        },
+      };
+    }
+
+    // ============================================
+    // PLAYER MANAGEMENT
+    // ============================================
+    function addPlayer() {
+      if (players.length >= maxPlayersPerReg) {
+        alert(`Maximum ${maxPlayersPerReg} players per registration.`);
+        return;
+      }
+
+      const playerId = `player_${Date.now()}`;
+      const playerNum = players.length + 1;
+      players.push({ id: playerId, data: {} });
+
+      const container = document.getElementById('players-list');
+      const playerFields = formConfig.player || {};
+      
+      let html = `
+        <div id="${playerId}" class="player-card card rounded-xl p-5">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="font-semibold flex items-center gap-2">
+              <span class="text-xl">${sport?.icon || '👤'}</span>
+              Player ${playerNum}
+            </h3>
+            ${playerNum > 1 ? `<button onclick="removePlayer('${playerId}')" class="text-red-400 text-sm hover:text-red-300">Remove</button>` : ''}
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      `;
+
+      // Dynamic player fields based on config
+      const fieldOrder = ['first_name', 'last_name', 'dob', 'gender', 'grade', 'school', 'jersey_size', 'shorts_size', 'position_preference', 'years_experience', 'previous_team'];
+      
+      for (const fieldKey of fieldOrder) {
+        const field = playerFields[fieldKey];
+        if (!field?.visible) continue;
+        
+        const req = field.required ? '<span class="text-red-400">*</span>' : '';
+        const reqAttr = field.required ? 'required' : '';
+        
+        if (fieldKey === 'gender') {
+          html += `
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">${field.label} ${req}</label>
+              <select data-player="${playerId}" data-field="${fieldKey}" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white" ${reqAttr}>
+                <option value="">Select...</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+            </div>
+          `;
+        } else if (fieldKey === 'grade') {
+          html += `
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">${field.label} ${req}</label>
+              <select data-player="${playerId}" data-field="${fieldKey}" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white" ${reqAttr}>
+                <option value="">Select...</option>
+                <option value="K">Kindergarten</option>
+                ${[1,2,3,4,5,6,7,8,9,10,11,12].map(g => `<option value="${g}">${g}${getOrdinal(g)} Grade</option>`).join('')}
+              </select>
+            </div>
+          `;
+        } else if (fieldKey === 'jersey_size' || fieldKey === 'shorts_size') {
+          html += `
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">${field.label} ${req}</label>
+              <select data-player="${playerId}" data-field="${fieldKey}" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white" ${reqAttr}>
+                <option value="">Select...</option>
+                <option value="YS">Youth Small</option>
+                <option value="YM">Youth Medium</option>
+                <option value="YL">Youth Large</option>
+                <option value="YXL">Youth XL</option>
+                <option value="AS">Adult Small</option>
+                <option value="AM">Adult Medium</option>
+                <option value="AL">Adult Large</option>
+                <option value="AXL">Adult XL</option>
+                <option value="A2XL">Adult 2XL</option>
+              </select>
+            </div>
+          `;
+        } else if (fieldKey === 'dob') {
+          html += `
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">${field.label} ${req}</label>
+              <input type="date" data-player="${playerId}" data-field="${fieldKey}" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white" ${reqAttr}>
+            </div>
+          `;
+        } else {
+          html += `
+            <div>
+              <label class="block text-sm text-gray-400 mb-2">${field.label} ${req}</label>
+              <input type="text" data-player="${playerId}" data-field="${fieldKey}" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white" ${reqAttr}>
+            </div>
+          `;
+        }
+      }
+
+      html += '</div></div>';
+      container.insertAdjacentHTML('beforeend', html);
+
+      // Update add button visibility
+      if (players.length >= maxPlayersPerReg) {
+        document.getElementById('add-player-btn').classList.add('hidden');
+      }
+    }
+
+    function removePlayer(playerId) {
+      players = players.filter(p => p.id !== playerId);
+      document.getElementById(playerId)?.remove();
+      
+      // Renumber remaining players
+      document.querySelectorAll('#players-list .player-card').forEach((card, i) => {
+        card.querySelector('h3').innerHTML = `<span class="text-xl">${sport?.icon || '👤'}</span> Player ${i + 1}`;
       });
-      document.getElementById('add-player-btn').classList.toggle('hidden', players.length >= 6);
+
+      // Show add button again
+      document.getElementById('add-player-btn').classList.remove('hidden');
     }
 
-    function createPlayerCardHTML(player, index) {
-      const sportsWithSeasons = allSports.filter(sport => allSeasons.some(season => season.sport_id === sport.id));
-      const sportCheckboxes = sportsWithSeasons.map(sport => {
-        const isChecked = player.sports[sport.id] !== undefined;
-        const sportSeasons = allSeasons.filter(s => s.sport_id === sport.id);
-        const selectedSeasonId = player.sports[sport.id] || '';
-        const seasonOptions = sportSeasons.map(season => `<option value="${season.id}" ${selectedSeasonId === season.id ? 'selected' : ''}>${season.name}</option>`).join('');
-        return `<div class="sport-checkbox border border-border rounded-xl p-3 ${isChecked ? 'checked' : ''}"><label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSport(${index}, '${sport.id}')"><span class="text-2xl">${sport.icon}</span><span class="font-medium">${sport.name}</span></label>${isChecked ? `<div class="season-select-container mt-3 ml-9"><select class="w-full bg-card border border-border rounded-lg p-2 text-sm text-white" onchange="updatePlayerSeason(${index}, '${sport.id}', this.value)">${seasonOptions}</select></div>` : ''}</div>`;
-      }).join('');
+    function getOrdinal(n) {
+      const s = ['th', 'st', 'nd', 'rd'];
+      const v = n % 100;
+      return s[(v - 20) % 10] || s[v] || s[0];
+    }
 
+    // ============================================
+    // CONTACT FORM
+    // ============================================
+    function buildContactForm() {
+      const container = document.getElementById('contact-form');
+      let html = '';
+
+      const parentFields = formConfig.parent || {};
+      const emergencyFields = formConfig.emergency || {};
+      const medicalFields = formConfig.medical || {};
+
+      // Primary Parent Section
+      html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">👤 Primary Parent/Guardian</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+      
+      if (parentFields.parent1_name?.visible) html += buildInputField('parent1_name', parentFields.parent1_name);
+      if (parentFields.parent1_email?.visible) html += buildInputField('parent1_email', { ...parentFields.parent1_email, type: 'email' });
+      if (parentFields.parent1_phone?.visible) html += buildInputField('parent1_phone', { ...parentFields.parent1_phone, type: 'tel' });
+      
+      html += '</div></div>';
+
+      // Secondary Parent Section
+      const hasParent2 = parentFields.parent2_name?.visible || parentFields.parent2_email?.visible;
+      if (hasParent2) {
+        html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">👤 Secondary Parent/Guardian <span class="text-sm font-normal text-gray-500">(Optional)</span></h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+        if (parentFields.parent2_name?.visible) html += buildInputField('parent2_name', parentFields.parent2_name);
+        if (parentFields.parent2_email?.visible) html += buildInputField('parent2_email', { ...parentFields.parent2_email, type: 'email' });
+        if (parentFields.parent2_phone?.visible) html += buildInputField('parent2_phone', { ...parentFields.parent2_phone, type: 'tel' });
+        html += '</div></div>';
+      }
+
+      // Address Section
+      const hasAddress = parentFields.address?.visible;
+      if (hasAddress) {
+        html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">🏠 Home Address</h3><div class="space-y-4">';
+        html += buildInputField('address', parentFields.address, 'col-span-2');
+        html += '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">';
+        if (parentFields.city?.visible) html += buildInputField('city', parentFields.city);
+        if (parentFields.state?.visible) html += buildSelectField('state', parentFields.state, ['TX', 'OK', 'AR', 'LA', 'NM', 'CO', 'KS', 'MO', 'CA', 'NY', 'FL']);
+        if (parentFields.zip?.visible) html += buildInputField('zip', { ...parentFields.zip, maxlength: 5 });
+        html += '</div></div></div>';
+      }
+
+      // Emergency Contact Section
+      html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">🆘 Emergency Contact <span class="text-sm font-normal text-gray-500">(other than parent)</span></h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+      if (emergencyFields.name?.visible) html += buildInputField('emergency_name', emergencyFields.name);
+      if (emergencyFields.phone?.visible) html += buildInputField('emergency_phone', { ...emergencyFields.phone, type: 'tel' });
+      if (emergencyFields.relation?.visible) html += buildSelectField('emergency_relation', emergencyFields.relation, ['Grandparent', 'Aunt/Uncle', 'Family Friend', 'Neighbor', 'Other']);
+      html += '</div></div>';
+
+      // Medical Section
+      const hasMedical = Object.values(medicalFields).some(f => f?.visible);
+      if (hasMedical) {
+        html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">🏥 Medical Information</h3><div class="space-y-4">';
+        if (medicalFields.allergies?.visible) html += buildTextareaField('allergies', medicalFields.allergies);
+        if (medicalFields.medical_conditions?.visible) html += buildTextareaField('medical_conditions', medicalFields.medical_conditions);
+        if (medicalFields.medications?.visible) html += buildTextareaField('medications', medicalFields.medications);
+        html += '</div></div>';
+      }
+
+      // Custom Questions
+      if (customQuestions.length > 0) {
+        html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">❓ Additional Questions</h3><div class="space-y-4">';
+        customQuestions.forEach((q, i) => {
+          if (q.type === 'dropdown') {
+            html += buildSelectField(`custom_${i}`, { label: q.label, required: q.required }, q.options || []);
+          } else if (q.type === 'yesno') {
+            html += buildSelectField(`custom_${i}`, { label: q.label, required: q.required }, ['Yes', 'No']);
+          } else if (q.type === 'textarea') {
+            html += buildTextareaField(`custom_${i}`, { label: q.label, required: q.required });
+          } else {
+            html += buildInputField(`custom_${i}`, { label: q.label, required: q.required });
+          }
+        });
+        html += '</div></div>';
+      }
+
+      container.innerHTML = html;
+    }
+
+    function buildInputField(id, config, extraClass = '') {
+      const req = config.required ? '<span class="text-red-400">*</span>' : '';
+      const type = config.type || 'text';
+      const maxlength = config.maxlength ? `maxlength="${config.maxlength}"` : '';
       return `
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="font-bold text-gold">Player ${index + 1}</h3>
-          ${players.length > 1 ? `<button onclick="removePlayer(${index})" class="remove-player-btn text-gray-400 hover:text-white p-1 rounded"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>` : ''}
+        <div class="${extraClass}">
+          <label class="block text-sm text-gray-400 mb-2">${config.label} ${req}</label>
+          <input type="${type}" id="${id}" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white" ${maxlength}>
         </div>
-        <div class="space-y-4">
-          <div class="grid grid-cols-2 gap-3">
-            <div><label class="block text-xs text-gray-400 mb-1">First Name *</label><input type="text" value="${player.first_name}" onchange="updatePlayer(${index}, 'first_name', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"></div>
-            <div><label class="block text-xs text-gray-400 mb-1">Last Name *</label><input type="text" value="${player.last_name}" onchange="updatePlayer(${index}, 'last_name', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"></div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div><label class="block text-xs text-gray-400 mb-1">Date of Birth *</label><input type="date" value="${player.dob}" onchange="updatePlayer(${index}, 'dob', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"></div>
-            <div><label class="block text-xs text-gray-400 mb-1">Grade *</label><select onchange="updatePlayer(${index}, 'grade', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"><option value="">Select...</option><option value="K" ${player.grade === 'K' ? 'selected' : ''}>Kinder</option><option value="1" ${player.grade === '1' ? 'selected' : ''}>1st</option><option value="2" ${player.grade === '2' ? 'selected' : ''}>2nd</option><option value="3" ${player.grade === '3' ? 'selected' : ''}>3rd</option><option value="4" ${player.grade === '4' ? 'selected' : ''}>4th</option><option value="5" ${player.grade === '5' ? 'selected' : ''}>5th</option><option value="6" ${player.grade === '6' ? 'selected' : ''}>6th</option><option value="7" ${player.grade === '7' ? 'selected' : ''}>7th</option><option value="8" ${player.grade === '8' ? 'selected' : ''}>8th</option><option value="9" ${player.grade === '9' ? 'selected' : ''}>9th</option></select></div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div><label class="block text-xs text-gray-400 mb-1">Gender *</label><select onchange="updatePlayer(${index}, 'gender', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"><option value="">Select...</option><option value="male" ${player.gender === 'male' ? 'selected' : ''}>Male</option><option value="female" ${player.gender === 'female' ? 'selected' : ''}>Female</option></select></div>
-            <div><label class="block text-xs text-gray-400 mb-1">School</label><input type="text" value="${player.school || ''}" onchange="updatePlayer(${index}, 'school', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"></div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div><label class="block text-xs text-gray-400 mb-1">Jersey Size *</label><select onchange="updatePlayer(${index}, 'jersey_size', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"><option value="">Select...</option><option value="YS" ${player.jersey_size === 'YS' ? 'selected' : ''}>Youth S</option><option value="YM" ${player.jersey_size === 'YM' ? 'selected' : ''}>Youth M</option><option value="YL" ${player.jersey_size === 'YL' ? 'selected' : ''}>Youth L</option><option value="YXL" ${player.jersey_size === 'YXL' ? 'selected' : ''}>Youth XL</option><option value="AS" ${player.jersey_size === 'AS' ? 'selected' : ''}>Adult S</option><option value="AM" ${player.jersey_size === 'AM' ? 'selected' : ''}>Adult M</option><option value="AL" ${player.jersey_size === 'AL' ? 'selected' : ''}>Adult L</option><option value="AXL" ${player.jersey_size === 'AXL' ? 'selected' : ''}>Adult XL</option></select></div>
-            <div><label class="block text-xs text-gray-400 mb-1">Short Size *</label><select onchange="updatePlayer(${index}, 'short_size', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm"><option value="">Select...</option><option value="YS" ${player.short_size === 'YS' ? 'selected' : ''}>Youth S</option><option value="YM" ${player.short_size === 'YM' ? 'selected' : ''}>Youth M</option><option value="YL" ${player.short_size === 'YL' ? 'selected' : ''}>Youth L</option><option value="YXL" ${player.short_size === 'YXL' ? 'selected' : ''}>Youth XL</option><option value="AS" ${player.short_size === 'AS' ? 'selected' : ''}>Adult S</option><option value="AM" ${player.short_size === 'AM' ? 'selected' : ''}>Adult M</option><option value="AL" ${player.short_size === 'AL' ? 'selected' : ''}>Adult L</option><option value="AXL" ${player.short_size === 'AXL' ? 'selected' : ''}>Adult XL</option></select></div>
-          </div>
-          <div class="border-t border-border pt-4 mt-4"><label class="block text-sm text-gray-400 mb-3">Select Sport(s) to Register *</label><div class="space-y-3">${sportCheckboxes}</div></div>
-          <div class="border-t border-border pt-4 mt-4"><label class="block text-sm text-gray-400 mb-2">Placement Preferences (Optional)</label><p class="text-xs text-gray-500 mb-3">Request specific coach, teammate, or scheduling preferences</p><textarea onchange="updatePlayer(${index}, 'placement_preferences', this.value)" class="w-full bg-card border border-border rounded-lg p-3 text-white text-sm h-20" placeholder="e.g., Wants to be on same team as Sarah Smith...">${player.placement_preferences || ''}</textarea></div>
-          <div class="border-t border-border pt-4 mt-4"><label class="flex items-center gap-3 cursor-pointer"><input type="checkbox" ${player.has_medical_conditions ? 'checked' : ''} onchange="toggleMedical(${index}, this.checked)"><span class="text-sm">Has medical conditions, allergies, or medications</span></label></div>
-          ${player.has_medical_conditions ? `<div class="space-y-3 bg-card rounded-lg p-3"><div><label class="block text-xs text-gray-400 mb-1">Medical Conditions</label><textarea onchange="updatePlayer(${index}, 'medical_conditions', this.value)" class="w-full bg-dark border border-border rounded-lg p-2 text-white text-sm h-16" placeholder="Describe conditions...">${player.medical_conditions || ''}</textarea></div><div><label class="block text-xs text-gray-400 mb-1">Current Medications</label><input type="text" value="${player.medications || ''}" onchange="updatePlayer(${index}, 'medications', this.value)" class="w-full bg-dark border border-border rounded-lg p-2 text-white text-sm" placeholder="List medications..."></div><div><label class="block text-xs text-gray-400 mb-1">Allergies</label><input type="text" value="${player.allergies || ''}" onchange="updatePlayer(${index}, 'allergies', this.value)" class="w-full bg-dark border border-border rounded-lg p-2 text-white text-sm" placeholder="List allergies..."></div></div>` : ''}
-        </div>`;
+      `;
     }
 
-    function toggleSport(playerIndex, sportId) { const player = players[playerIndex]; if (player.sports[sportId] !== undefined) { delete player.sports[sportId]; } else { const sportSeasons = allSeasons.filter(s => s.sport_id === sportId); if (sportSeasons.length > 0) player.sports[sportId] = sportSeasons[0].id; } renderPlayers(); }
-    function updatePlayerSeason(playerIndex, sportId, seasonId) { players[playerIndex].sports[sportId] = seasonId; }
-    function updatePlayer(index, field, value) { players[index][field] = value; }
-    function toggleMedical(index, checked) { players[index].has_medical_conditions = checked; if (!checked) { players[index].medical_conditions = ''; players[index].medications = ''; players[index].allergies = ''; } renderPlayers(); }
-    function addPlayer() { if (players.length >= 6) return; players.push({ first_name: '', last_name: '', dob: '', grade: '', gender: '', school: '', jersey_size: '', short_size: '', placement_preferences: '', has_medical_conditions: false, medical_conditions: '', medications: '', allergies: '', sports: {} }); renderPlayers(); }
-    function removePlayer(index) { if (players.length <= 1) return; players.splice(index, 1); renderPlayers(); }
-    function formatPhone(input) { let value = input.value.replace(/\D/g, ''); if (value.length >= 6) value = value.slice(0, 3) + '-' + value.slice(3, 6) + '-' + value.slice(6, 10); else if (value.length >= 3) value = value.slice(0, 3) + '-' + value.slice(3); input.value = value; }
-    function updateStepDots() { document.querySelectorAll('.step-dot').forEach((dot, index) => { dot.classList.remove('active', 'completed'); const step = index + 1; if (step < currentStep) dot.classList.add('completed'); else if (step === currentStep) dot.classList.add('active'); }); }
+    function buildSelectField(id, config, options) {
+      const req = config.required ? '<span class="text-red-400">*</span>' : '';
+      const optionsHtml = options.map(o => `<option value="${o}">${o}</option>`).join('');
+      return `
+        <div>
+          <label class="block text-sm text-gray-400 mb-2">${config.label} ${req}</label>
+          <select id="${id}" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white">
+            <option value="">Select...</option>
+            ${optionsHtml}
+          </select>
+        </div>
+      `;
+    }
+
+    function buildTextareaField(id, config) {
+      const req = config.required ? '<span class="text-red-400">*</span>' : '';
+      return `
+        <div>
+          <label class="block text-sm text-gray-400 mb-2">${config.label} ${req}</label>
+          <textarea id="${id}" rows="2" class="w-full field-input bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-white resize-none"></textarea>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // WAIVERS FORM
+    // ============================================
+    function buildWaiversForm() {
+      const container = document.getElementById('waivers-form');
+      
+      if (orgWaivers.length === 0) {
+        // Default waivers
+        container.innerHTML = `
+          <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_liability')">
+            <label class="flex items-start gap-4 cursor-pointer">
+              <input type="checkbox" id="waiver_liability" class="mt-1">
+              <div>
+                <p class="font-medium">Liability Waiver <span class="text-red-400">*</span></p>
+                <p class="text-gray-400 text-sm mt-1">I understand participation involves risk of injury. I release ${organization?.name || 'the organization'} from liability.</p>
+              </div>
+            </label>
+          </div>
+          <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_photo')">
+            <label class="flex items-start gap-4 cursor-pointer">
+              <input type="checkbox" id="waiver_photo" class="mt-1">
+              <div>
+                <p class="font-medium">Photo/Video Release</p>
+                <p class="text-gray-400 text-sm mt-1">I grant permission to use photos and videos for promotional purposes.</p>
+              </div>
+            </label>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      orgWaivers.forEach((waiver, i) => {
+        const isRequired = waiver.is_required !== false;
+        html += `
+          <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_${i}')">
+            <label class="flex items-start gap-4 cursor-pointer">
+              <input type="checkbox" id="waiver_${i}" data-waiver-id="${waiver.id}">
+              <div>
+                <p class="font-medium">${waiver.name} ${isRequired ? '<span class="text-red-400">*</span>' : ''}</p>
+                ${waiver.description ? `<p class="text-gray-400 text-sm mt-1">${waiver.description}</p>` : ''}
+              </div>
+            </label>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function toggleWaiver(card, checkboxId) {
+      const checkbox = document.getElementById(checkboxId);
+      checkbox.checked = !checkbox.checked;
+      card.classList.toggle('checked', checkbox.checked);
+    }
+
+    // ============================================
+    // NAVIGATION
+    // ============================================
+    function updateProgress() {
+      for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`step-${i}-dot`);
+        const progress = document.getElementById(`progress-${i}`);
+        
+        dot.classList.remove('active', 'completed');
+        
+        if (i < currentStep) {
+          dot.classList.add('completed');
+          dot.innerHTML = '✓';
+          if (progress) progress.style.width = '100%';
+        } else if (i === currentStep) {
+          dot.classList.add('active');
+          dot.innerHTML = i;
+        } else {
+          dot.innerHTML = i;
+          if (progress) progress.style.width = '0%';
+        }
+      }
+    }
+
+    function goToStep(step) {
+      // Validate current step before advancing
+      if (step > currentStep && !validateStep(currentStep)) return;
+
+      document.getElementById(`step-${currentStep}`).classList.add('hidden');
+      currentStep = step;
+      document.getElementById(`step-${currentStep}`).classList.remove('hidden');
+
+      if (step === 4) buildReviewSection();
+
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     function validateStep(step) {
-      if (step === 1) { for (let i = 0; i < players.length; i++) { const p = players[i]; if (!p.first_name || !p.last_name || !p.dob || !p.grade || !p.gender) { alert(`Please complete required fields for Player ${i + 1}`); return false; } if (!p.jersey_size || !p.short_size) { alert(`Please select uniform sizes for ${p.first_name}`); return false; } if (Object.keys(p.sports).length === 0) { alert(`Please select sport(s) for ${p.first_name}`); return false; } } return true; }
-      if (step === 2) { const fields = ['parent_name', 'parent_phone', 'parent_email', 'street', 'city', 'zip']; for (const f of fields) if (!document.getElementById(f).value) { alert('Please fill in all required fields'); return false; } if (!document.getElementById('parent_email').value.includes('@')) { alert('Please enter a valid email'); return false; } return true; }
-      if (step === 3) { if (!document.getElementById('emergency_name').value || !document.getElementById('emergency_phone').value || !document.getElementById('emergency_relation').value) { alert('Please fill in all emergency contact fields'); return false; } return true; }
-      if (step === 4) { if (!document.getElementById('waiver_liability').checked || !document.getElementById('waiver_conduct').checked) { alert('Please agree to required waivers'); return false; } return true; }
-      return true;
-    }
+      if (step === 1) {
+        // Collect and validate player data
+        let valid = true;
+        players.forEach(player => {
+          const inputs = document.querySelectorAll(`[data-player="${player.id}"]`);
+          inputs.forEach(input => {
+            const field = input.dataset.field;
+            player.data[field] = input.value;
+            
+            const fieldConfig = formConfig.player?.[field];
+            if (fieldConfig?.required && !input.value) {
+              input.classList.add('border-red-500');
+              valid = false;
+            } else {
+              input.classList.remove('border-red-500');
+            }
+          });
+        });
 
-    function nextStep(from) { if (!validateStep(from)) return; currentStep = from + 1; document.getElementById(`step-${from}`).classList.add('hidden'); document.getElementById(`step-${currentStep}`).classList.remove('hidden'); if (currentStep === 5) updateReviewSection(); updateStepDots(); window.scrollTo(0, 0); }
-    function prevStep(from) { currentStep = from - 1; document.getElementById(`step-${from}`).classList.add('hidden'); document.getElementById(`step-${currentStep}`).classList.remove('hidden'); updateStepDots(); window.scrollTo(0, 0); }
+        if (players.length === 0) {
+          alert('Please add at least one player.');
+          return false;
+        }
+        if (!valid) {
+          alert('Please fill in all required player fields.');
+          return false;
+        }
+        return true;
+      }
 
-    function updateReviewSection() {
-      let playerSummary = '<p class="text-sm text-gray-400 mb-2">Players & Sports</p>';
-      let totalRegistrations = 0;
-      players.forEach((player, i) => {
-        const sportsList = Object.entries(player.sports).map(([sportId, seasonId]) => { const sport = allSports.find(s => s.id === sportId); const season = allSeasons.find(s => s.id === seasonId); totalRegistrations++; return `<span class="inline-block bg-card px-2 py-1 rounded text-xs mr-1 mb-1">${sport?.icon} ${sport?.name} - ${season?.name}</span>`; }).join('');
-        playerSummary += `<div class="mb-3 pb-3 ${i < players.length - 1 ? 'border-b border-border' : ''}"><p class="font-medium">${player.first_name} ${player.last_name}</p><p class="text-xs text-gray-400">Grade ${player.grade} • ${player.gender}</p><div class="mt-2">${sportsList}</div></div>`;
-      });
-      document.getElementById('review-players').innerHTML = playerSummary;
-      document.getElementById('review-parent-name').textContent = document.getElementById('parent_name').value;
-      document.getElementById('review-parent-contact').textContent = document.getElementById('parent_email').value + ' • ' + document.getElementById('parent_phone').value;
-      document.getElementById('review-total').textContent = `~$${totalRegistrations * 335}`;
-    }
-
-    async function submitRegistration() {
-      const signedBy = document.getElementById('waiver_signed_by').value;
-      const signedDate = document.getElementById('waiver_signed_date').value;
-      if (!signedBy || !signedDate) { alert('Please sign the form'); return; }
-
-      const btn = document.getElementById('submit-btn');
-      btn.disabled = true;
-      btn.textContent = 'Submitting...';
-
-      try {
-        const contactData = {
-          primary_contact_name: document.getElementById('parent_name').value.trim(),
-          primary_contact_phone: document.getElementById('parent_phone').value.trim(),
-          primary_contact_email: document.getElementById('parent_email').value.trim().toLowerCase(),
-          secondary_contact_name: document.getElementById('parent_2_name').value.trim() || null,
-          secondary_contact_phone: document.getElementById('parent_2_phone').value.trim() || null,
-          secondary_contact_email: document.getElementById('parent_2_email').value.trim().toLowerCase() || null,
-          emergency_contact_name: document.getElementById('emergency_name').value.trim(),
-          emergency_contact_phone: document.getElementById('emergency_phone').value.trim(),
-          emergency_contact_relation: document.getElementById('emergency_relation').value,
-          address: `${document.getElementById('street').value.trim()}, ${document.getElementById('city').value.trim()}, ${document.getElementById('state').value} ${document.getElementById('zip').value.trim()}`,
-        };
-
-        const { data: familyData, error: familyError } = await db.from('families').insert(contactData).select().single();
-        if (familyError) throw familyError;
-        const familyId = familyData.id;
-
-        const waiverData = { waiver_liability: document.getElementById('waiver_liability').checked, waiver_photo: document.getElementById('waiver_photo').checked, waiver_conduct: document.getElementById('waiver_conduct').checked, waiver_signed_by: signedBy, waiver_signed_date: signedDate, signature_data: document.getElementById('signature_data').value || null };
-        const createdRegistrations = [];
-
-        for (const player of players) {
-          for (const [sportId, seasonId] of Object.entries(player.sports)) {
-            const sport = allSports.find(s => s.id === sportId);
-            const season = allSeasons.find(s => s.id === seasonId);
-            let gradeValue = player.grade === 'K' ? 0 : parseInt(player.grade);
-
-            const playerData = {
-              first_name: player.first_name.trim(), last_name: player.last_name.trim(), dob: player.dob, grade: gradeValue, gender: player.gender, school: player.school?.trim() || null,
-              uniform_size_jersey: player.jersey_size, uniform_size_shorts: player.short_size, placement_preferences: player.placement_preferences?.trim() || null,
-              medical_conditions: player.medical_conditions?.trim() || null, medications: player.medications?.trim() || null, allergies: player.allergies?.trim() || null,
-              sport_id: sportId, season_id: seasonId, family_id: familyId,
-              parent_name: contactData.primary_contact_name, parent_phone: contactData.primary_contact_phone, parent_email: contactData.primary_contact_email, address: contactData.address,
-              parent_2_name: contactData.secondary_contact_name, parent_2_phone: contactData.secondary_contact_phone, parent_2_email: contactData.secondary_contact_email,
-              emergency_contact_name: contactData.emergency_contact_name, emergency_contact_phone: contactData.emergency_contact_phone, emergency_contact_relation: contactData.emergency_contact_relation,
-              ...waiverData, player_type: 'new', registration_source: 'web',
-            };
-
-            const { data: newPlayer, error: playerError } = await db.from('players').insert(playerData).select().single();
-            if (playerError) throw playerError;
-
-            // Insert registration - ignore duplicates
-            await db.from('registrations').insert({ player_id: newPlayer.id, season_id: seasonId, family_id: familyId, status: 'new', submitted_at: new Date().toISOString(), registration_source: 'web' }).select().maybeSingle();
-
-            createdRegistrations.push({ player: newPlayer, sport, season });
+      if (step === 2) {
+        // Validate contact fields
+        let valid = true;
+        const allFields = { ...formConfig.parent, ...formConfig.emergency };
+        
+        for (const [key, config] of Object.entries(allFields)) {
+          if (!config?.visible) continue;
+          
+          const fieldId = key.startsWith('parent') || key === 'address' || key === 'city' || key === 'state' || key === 'zip' 
+            ? key 
+            : `emergency_${key}`;
+          const input = document.getElementById(fieldId);
+          
+          if (input && config.required && !input.value) {
+            input.classList.add('border-red-500');
+            valid = false;
+          } else if (input) {
+            input.classList.remove('border-red-500');
           }
         }
 
-        window.registrationEmail = contactData.primary_contact_email;
-        window.registrationPhone = contactData.primary_contact_phone;
-        window.registrationFamilyId = familyId;
-        window.createdRegistrations = createdRegistrations;
-        showSuccess(createdRegistrations, familyData);
-      } catch (error) {
-        console.error('Error:', error);
-        alert('Error submitting: ' + error.message);
-        btn.disabled = false;
-        btn.textContent = 'Submit Registration';
+        if (!valid) {
+          alert('Please fill in all required contact fields.');
+          return false;
+        }
+        return true;
       }
+
+      if (step === 3) {
+        // Validate waivers and signature
+        const signature = document.getElementById('signature-input').value.trim();
+        if (!signature) {
+          alert('Please type your name to sign the waivers.');
+          document.getElementById('signature-input').classList.add('border-red-500');
+          return false;
+        }
+        document.getElementById('signature-input').classList.remove('border-red-500');
+
+        // Check required waivers
+        if (orgWaivers.length === 0) {
+          // Default waivers - liability is required
+          if (!document.getElementById('waiver_liability')?.checked) {
+            alert('Please accept the Liability Waiver to continue.');
+            return false;
+          }
+        } else {
+          for (let i = 0; i < orgWaivers.length; i++) {
+            const waiver = orgWaivers[i];
+            if (waiver.is_required !== false && !document.getElementById(`waiver_${i}`)?.checked) {
+              alert(`Please accept the "${waiver.name}" waiver to continue.`);
+              return false;
+            }
+          }
+        }
+
+        return true;
+      }
+
+      return true;
     }
 
-    function showSuccess(registrations, family) {
-      document.getElementById('registered-players-list').innerHTML = registrations.map(reg => `<div class="flex items-center gap-3 p-3 bg-dark rounded-lg"><span class="text-2xl">${reg.sport?.icon || '🏆'}</span><div><p class="font-medium">${reg.player.first_name} ${reg.player.last_name}</p><p class="text-sm text-gray-400">${reg.sport?.name} - ${reg.season?.name}</p></div></div>`).join('');
-      document.getElementById('account-email-display').textContent = window.registrationEmail;
-      document.getElementById('fee-breakdown').innerHTML = `<div class="flex justify-between"><span class="text-gray-400">Registrations</span><span>${registrations.length} × $335</span></div><div class="border-t border-border pt-3 mt-3 flex justify-between font-bold"><span>Estimated Total</span><span class="text-gold">$${registrations.length * 335}</span></div><p class="text-xs text-gray-500 mt-2">Exact fees confirmed after team assignment</p>`;
-      document.getElementById('form-container').classList.add('hidden');
-      document.getElementById('success').classList.remove('hidden');
-      window.scrollTo(0, 0);
+    // ============================================
+    // REVIEW SECTION
+    // ============================================
+    function buildReviewSection() {
+      const container = document.getElementById('review-content');
+      
+      // Players summary
+      let html = '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4">👥 Players</h3><div class="space-y-3">';
+      players.forEach(player => {
+        const d = player.data;
+        html += `
+          <div class="flex items-center gap-4 p-3 bg-gray-800/50 rounded-lg">
+            <span class="text-2xl">${sport?.icon || '👤'}</span>
+            <div>
+              <p class="font-medium">${d.first_name} ${d.last_name}</p>
+              <p class="text-sm text-gray-400">${d.grade ? `Grade ${d.grade}` : ''} ${d.gender ? `• ${d.gender}` : ''}</p>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div></div>';
+
+      // Contact summary
+      const parentName = document.getElementById('parent1_name')?.value || '';
+      const parentEmail = document.getElementById('parent1_email')?.value || '';
+      const parentPhone = document.getElementById('parent1_phone')?.value || '';
+      
+      html += `
+        <div class="card rounded-xl p-5">
+          <h3 class="font-semibold mb-4">📞 Contact</h3>
+          <div class="space-y-2 text-sm">
+            <p class="text-white">${parentName}</p>
+            <p class="text-gray-400">${parentEmail}</p>
+            <p class="text-gray-400">${parentPhone}</p>
+          </div>
+        </div>
+      `;
+
+      // Signature confirmation
+      const signature = document.getElementById('signature-input')?.value || '';
+      html += `
+        <div class="card rounded-xl p-5">
+          <h3 class="font-semibold mb-4">✍️ Signature</h3>
+          <p class="text-gray-300">${signature}</p>
+          <p class="text-xs text-gray-500 mt-1">${new Date().toLocaleDateString()}</p>
+        </div>
+      `;
+
+      container.innerHTML = html;
+
+      // Fee breakdown
+      buildFeeBreakdown();
     }
 
-    function skipAccountCreation() { document.getElementById('account-creation-section').classList.add('hidden'); }
+    function buildFeeBreakdown() {
+      const regFee = parseFloat(season.fee_registration) || 0;
+      const uniformFee = parseFloat(season.fee_uniform) || 0;
+      const monthlyFee = parseFloat(season.fee_monthly) || 0;
+      const months = parseInt(season.months_in_season) || 0;
+      const earlyBirdDiscount = parseFloat(season.early_bird_discount) || 0;
+      
+      // Check if early bird applies
+      const now = new Date();
+      const earlyBirdDeadline = season.early_bird_deadline ? new Date(season.early_bird_deadline) : null;
+      const isEarlyBird = earlyBirdDeadline && now <= earlyBirdDeadline;
 
-    async function createAccount() {
-      const email = window.registrationEmail;
-      const password = document.getElementById('account_password').value;
-      const passwordConfirm = document.getElementById('account_password_confirm').value;
-      if (!password || password.length < 8) { alert('Password must be at least 8 characters.'); return; }
-      if (password !== passwordConfirm) { alert('Passwords do not match.'); return; }
-      const btn = document.getElementById('create-account-btn');
+      const perPlayer = regFee + uniformFee + (monthlyFee * months);
+      const discount = isEarlyBird ? earlyBirdDiscount * players.length : 0;
+      const total = (perPlayer * players.length) - discount;
+
+      let html = `
+        <div class="flex justify-between"><span class="text-gray-400">Players</span><span>${players.length}</span></div>
+        <div class="flex justify-between"><span class="text-gray-400">Registration Fee</span><span>$${regFee}</span></div>
+      `;
+      
+      if (uniformFee > 0) {
+        html += `<div class="flex justify-between"><span class="text-gray-400">Uniform Fee</span><span>$${uniformFee}</span></div>`;
+      }
+      
+      if (monthlyFee > 0 && months > 0) {
+        html += `<div class="flex justify-between"><span class="text-gray-400">Monthly Fee × ${months}</span><span>$${monthlyFee * months}</span></div>`;
+      }
+
+      if (discount > 0) {
+        html += `<div class="flex justify-between text-emerald-400"><span>🎉 Early Bird Discount</span><span>-$${discount}</span></div>`;
+      }
+
+      document.getElementById('fee-breakdown').innerHTML = html;
+      document.getElementById('total-amount').textContent = `$${total.toFixed(0)}`;
+    }
+
+    // ============================================
+    // SUBMIT
+    // ============================================
+    async function submitRegistration() {
+      const btn = document.getElementById('submit-btn');
       btn.disabled = true;
-      btn.textContent = 'Creating Account...';
+      btn.innerHTML = '<span class="animate-pulse">Submitting...</span>';
+
       try {
-        const { data: authData, error: authError } = await db.auth.signUp({ email, password, options: { data: { full_name: document.getElementById('parent_name').value.trim(), phone: window.registrationPhone, family_id: window.registrationFamilyId, role: 'parent' } } });
-        if (authError) throw authError;
-        await db.from('families').update({ account_id: authData.user.id, updated_at: new Date().toISOString() }).eq('id', window.registrationFamilyId);
-        for (const reg of window.createdRegistrations) { await db.from('players').update({ parent_account_id: authData.user.id }).eq('id', reg.player.id); }
-        document.getElementById('account-form').classList.add('hidden');
-        document.getElementById('account-created').classList.remove('hidden');
-      } catch (error) {
-        console.error('Account creation error:', error);
-        alert('Error creating account: ' + error.message);
+        // Gather all data
+        const contactData = {
+          primary_contact_name: document.getElementById('parent1_name')?.value || '',
+          primary_contact_email: (document.getElementById('parent1_email')?.value || '').toLowerCase(),
+          primary_contact_phone: document.getElementById('parent1_phone')?.value || '',
+          secondary_contact_name: document.getElementById('parent2_name')?.value || null,
+          secondary_contact_email: document.getElementById('parent2_email')?.value?.toLowerCase() || null,
+          secondary_contact_phone: document.getElementById('parent2_phone')?.value || null,
+          emergency_contact_name: document.getElementById('emergency_name')?.value || '',
+          emergency_contact_phone: document.getElementById('emergency_phone')?.value || '',
+          emergency_contact_relation: document.getElementById('emergency_relation')?.value || '',
+          address: document.getElementById('address')?.value || null,
+        };
+
+        // 1. Create family record
+        const { data: family, error: familyErr } = await db.from('families').insert(contactData).select().single();
+        if (familyErr) throw familyErr;
+
+        const signature = document.getElementById('signature-input')?.value || '';
+        const createdPlayers = [];
+
+        // 2. Create players and registrations
+        for (const player of players) {
+          const playerData = {
+            first_name: player.data.first_name,
+            last_name: player.data.last_name,
+            dob: player.data.dob || null,
+            gender: player.data.gender || null,
+            grade: player.data.grade === 'K' ? 0 : parseInt(player.data.grade) || null,
+            school: player.data.school || null,
+            uniform_size_jersey: player.data.jersey_size || null,
+            uniform_size_shorts: player.data.shorts_size || null,
+            sport_id: sport?.id || null,
+            season_id: season.id,
+            family_id: family.id,
+            parent_name: contactData.primary_contact_name,
+            parent_email: contactData.primary_contact_email,
+            parent_phone: contactData.primary_contact_phone,
+            address: contactData.address,
+            medical_conditions: document.getElementById('medical_conditions')?.value || null,
+            allergies: document.getElementById('allergies')?.value || null,
+            medications: document.getElementById('medications')?.value || null,
+            waiver_signed_by: signature,
+            waiver_signed_date: new Date().toISOString().split('T')[0],
+            waiver_liability: document.getElementById('waiver_liability')?.checked || orgWaivers.length > 0,
+            waiver_photo: document.getElementById('waiver_photo')?.checked || false,
+            registration_source: 'web',
+          };
+
+          const { data: newPlayer, error: playerErr } = await db.from('players').insert(playerData).select().single();
+          if (playerErr) throw playerErr;
+
+          // Create registration record
+          await db.from('registrations').insert({
+            player_id: newPlayer.id,
+            season_id: season.id,
+            family_id: family.id,
+            status: 'pending',
+            submitted_at: new Date().toISOString(),
+            registration_source: 'web',
+          });
+
+          createdPlayers.push(newPlayer);
+        }
+
+        // Show success
+        showSuccess(createdPlayers, family);
+
+      } catch (err) {
+        console.error('Submit error:', err);
+        alert('Error submitting registration: ' + err.message);
         btn.disabled = false;
-        btn.textContent = 'Create Account';
+        btn.innerHTML = '✓ Submit Registration';
       }
     }
 
-    function registerAnother() { window.location.reload(); }
+    // ============================================
+    // SUCCESS SCREEN
+    // ============================================
+    function showSuccess(playersData, family) {
+      document.getElementById('registration-container').classList.add('hidden');
+      document.getElementById('success-screen').classList.remove('hidden');
+
+      document.getElementById('success-welcome').textContent = `Welcome to ${organization.name}!`;
+
+      // Players list
+      document.getElementById('success-players').innerHTML = playersData.map(p => `
+        <div class="flex items-center gap-4 p-3 bg-gray-800/50 rounded-lg">
+          <span class="text-2xl">${sport?.icon || '👤'}</span>
+          <div>
+            <p class="font-medium">${p.first_name} ${p.last_name}</p>
+            <p class="text-sm text-gray-400">${season.name}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Payment methods
+      const paymentMethods = organization.settings?.payment_methods;
+      if (paymentMethods) {
+        const methods = [];
+        if (paymentMethods.venmo?.enabled) {
+          methods.push({ name: 'Venmo', handle: paymentMethods.venmo.handle, color: 'bg-blue-500', icon: 'V' });
+        }
+        if (paymentMethods.zelle?.enabled) {
+          methods.push({ name: 'Zelle', handle: paymentMethods.zelle.email || paymentMethods.zelle.phone, color: 'bg-purple-600', icon: 'Z' });
+        }
+        if (paymentMethods.cashapp?.enabled) {
+          methods.push({ name: 'Cash App', handle: paymentMethods.cashapp.handle, color: 'bg-green-500', icon: '$' });
+        }
+
+        if (methods.length > 0) {
+          document.getElementById('payment-methods-section').classList.remove('hidden');
+          document.getElementById('payment-methods-list').innerHTML = methods.map(m => `
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 ${m.color} rounded-lg flex items-center justify-center font-bold">${m.icon}</div>
+              <div>
+                <p class="font-medium">${m.name}</p>
+                <p class="text-primary">${m.handle}</p>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      // Contact info
+      const email = organization.settings?.contact_email || organization.email;
+      const phone = organization.settings?.contact_phone || organization.phone;
+      if (email || phone) {
+        document.getElementById('org-contact-section').classList.remove('hidden');
+        let contactHtml = '';
+        if (email) contactHtml += `<p class="text-gray-300">📧 ${email}</p>`;
+        if (phone) contactHtml += `<p class="text-gray-300 mt-1">📞 ${phone}</p>`;
+        document.getElementById('org-contact-info').innerHTML = contactHtml;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   </script>
 </body>
 </html>

@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registration</title>
+  <title>Registration - Black Hornets</title>
   <meta name="description" content="Player Registration">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏐</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --primary: #8B5CF6;
-      --primary-dark: #7C3AED;
+      --primary: #FFD700;
+      --primary-dark: #E6C200;
       --success: #10B981;
       --warning: #F59E0B;
       --danger: #EF4444;
@@ -21,7 +21,6 @@
     .bg-primary-dark { background-color: var(--primary-dark); }
     .text-primary { color: var(--primary); }
     .border-primary { border-color: var(--primary); }
-    .ring-primary { --tw-ring-color: var(--primary); }
     
     input, select, textarea { 
       -webkit-appearance: none; 
@@ -52,7 +51,7 @@
       top: 1px; 
       width: 6px; 
       height: 11px;
-      border: solid white; 
+      border: solid #000; 
       border-width: 0 2px 2px 0; 
       transform: rotate(45deg);
     }
@@ -64,7 +63,7 @@
     .step-indicator { transition: all 0.3s ease; }
     .step-indicator.active { 
       background-color: var(--primary); 
-      color: white;
+      color: #000;
       transform: scale(1.1);
     }
     .step-indicator.completed { 
@@ -83,12 +82,13 @@
     }
     .field-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+      box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
       outline: none;
     }
     
     .btn-primary {
       background-color: var(--primary);
+      color: #000;
       transition: all 0.2s ease;
     }
     .btn-primary:hover {
@@ -97,6 +97,11 @@
     }
     .btn-primary:active {
       transform: translateY(0);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
     }
     
     .card {
@@ -123,14 +128,10 @@
       to { opacity: 1; transform: translateX(0); }
     }
 
-    /* Custom scrollbar */
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #1f2937; }
     ::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #6b7280; }
-
-    /* Signature canvas */
-    .signature-canvas { touch-action: none; cursor: crosshair; }
   </style>
 </head>
 <body class="bg-gray-900 min-h-screen text-white">
@@ -151,7 +152,7 @@
       </div>
       <h1 id="error-title" class="text-2xl font-bold mb-3">Registration Unavailable</h1>
       <p id="error-message" class="text-gray-400 mb-6">This registration link may be invalid or expired.</p>
-      <a href="/" class="text-primary hover:underline">← Go Home</a>
+      <button onclick="location.reload()" class="text-primary hover:underline">Try Again</button>
     </div>
   </div>
 
@@ -176,7 +177,7 @@
         <div class="flex items-center gap-4">
           <div id="org-logo-container">
             <img id="org-logo" src="" alt="" class="w-14 h-14 rounded-xl object-cover hidden">
-            <div id="org-logo-fallback" class="w-14 h-14 rounded-xl bg-gray-800 flex items-center justify-center">
+            <div id="org-logo-fallback" class="w-14 h-14 rounded-xl bg-primary flex items-center justify-center">
               <span id="org-icon" class="text-2xl">🏆</span>
             </div>
           </div>
@@ -195,17 +196,17 @@
           <div id="step-1-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">1</div>
           <span class="text-xs mt-1.5 text-gray-500">Players</span>
         </div>
-        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-1" class="h-full bg-primary rounded transition-all duration-300" style="width: 0%"></div></div>
+        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-1" class="h-full rounded transition-all duration-300" style="width: 0%; background-color: var(--primary)"></div></div>
         <div class="flex flex-col items-center">
           <div id="step-2-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">2</div>
           <span class="text-xs mt-1.5 text-gray-500">Contact</span>
         </div>
-        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-2" class="h-full bg-primary rounded transition-all duration-300" style="width: 0%"></div></div>
+        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-2" class="h-full rounded transition-all duration-300" style="width: 0%; background-color: var(--primary)"></div></div>
         <div class="flex flex-col items-center">
           <div id="step-3-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">3</div>
           <span class="text-xs mt-1.5 text-gray-500">Waivers</span>
         </div>
-        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-3" class="h-full bg-primary rounded transition-all duration-300" style="width: 0%"></div></div>
+        <div class="flex-1 h-1 mx-2 bg-gray-700 rounded"><div id="progress-3" class="h-full rounded transition-all duration-300" style="width: 0%; background-color: var(--primary)"></div></div>
         <div class="flex flex-col items-center">
           <div id="step-4-dot" class="step-indicator w-9 h-9 rounded-full bg-gray-700 flex items-center justify-center text-sm font-bold">4</div>
           <span class="text-xs mt-1.5 text-gray-500">Review</span>
@@ -231,7 +232,7 @@
         </button>
         
         <div class="mt-8">
-          <button onclick="goToStep(2)" class="w-full btn-primary py-4 rounded-xl font-semibold text-white">
+          <button onclick="goToStep(2)" class="w-full btn-primary py-4 rounded-xl font-semibold">
             Continue to Contact Info →
           </button>
         </div>
@@ -250,7 +251,7 @@
           <button onclick="goToStep(1)" class="flex-1 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
             ← Back
           </button>
-          <button onclick="goToStep(3)" class="flex-1 btn-primary py-4 rounded-xl font-semibold text-white">
+          <button onclick="goToStep(3)" class="flex-1 btn-primary py-4 rounded-xl font-semibold">
             Continue →
           </button>
         </div>
@@ -282,7 +283,7 @@
           <button onclick="goToStep(2)" class="flex-1 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
             ← Back
           </button>
-          <button onclick="goToStep(4)" class="flex-1 btn-primary py-4 rounded-xl font-semibold text-white">
+          <button onclick="goToStep(4)" class="flex-1 btn-primary py-4 rounded-xl font-semibold">
             Continue →
           </button>
         </div>
@@ -312,7 +313,7 @@
           <button onclick="goToStep(3)" class="flex-1 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
             ← Back
           </button>
-          <button id="submit-btn" onclick="submitRegistration()" class="flex-1 btn-primary py-4 rounded-xl font-semibold text-white">
+          <button id="submit-btn" onclick="submitRegistration()" class="flex-1 btn-primary py-4 rounded-xl font-semibold">
             ✓ Submit Registration
           </button>
         </div>
@@ -352,7 +353,7 @@
         <h2 class="font-bold mb-4">What's Next?</h2>
         <div class="space-y-4">
           <div class="flex gap-3">
-            <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+            <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 text-black" style="background-color: var(--primary)">1</div>
             <div>
               <p class="font-medium">Registration Review</p>
               <p class="text-gray-400 text-sm">Our team will review your registration</p>
@@ -375,17 +376,33 @@
         </div>
       </div>
       
-      <!-- Payment Methods (if configured) -->
-      <div id="payment-methods-section" class="card rounded-2xl p-6 mb-6 hidden">
+      <!-- Payment Methods -->
+      <div id="payment-methods-section" class="card rounded-2xl p-6 mb-6">
         <h2 class="font-bold mb-4">Payment Options</h2>
-        <div id="payment-methods-list" class="space-y-3"></div>
+        <div class="space-y-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center font-bold">V</div>
+            <div>
+              <p class="font-medium">Venmo</p>
+              <p class="text-primary">@BlackHornetsVB</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center font-bold">Z</div>
+            <div>
+              <p class="font-medium">Zelle</p>
+              <p class="text-primary">blackhornetsvolleyball@gmail.com</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center font-bold">$</div>
+            <div>
+              <p class="font-medium">Cash App</p>
+              <p class="text-primary">$BlackHornetsVB</p>
+            </div>
+          </div>
+        </div>
         <p class="text-gray-500 text-sm mt-4">Include player name(s) in payment memo.</p>
-      </div>
-      
-      <!-- Contact Info -->
-      <div id="org-contact-section" class="card rounded-2xl p-6 hidden">
-        <h2 class="font-bold mb-4">Questions?</h2>
-        <div id="org-contact-info"></div>
       </div>
       
       <button onclick="location.reload()" class="w-full mt-6 py-4 rounded-xl border border-gray-600 text-white font-medium hover:bg-gray-800 transition">
@@ -396,10 +413,13 @@
 
   <script>
     // ============================================
-    // CONFIGURATION
+    // CONFIGURATION - YOUR SUPABASE CREDENTIALS
     // ============================================
     const SUPABASE_URL = 'https://uqpjvbiuokwpldjvxiby.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVxcGp2Yml1b2t3cGxkanZ4aWJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyMTEwODMsImV4cCI6MjA4Mjc4NzA4M30.k643d5gVS2uWWe_QgSvAMjWVuRgBIU2wI0bR38vYDCc';
+    
+    // DEFAULT ORG - Used if no ?org= parameter provided
+    const DEFAULT_ORG_SLUG = 'black-hornets';
     
     // Initialize Supabase
     const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -424,15 +444,12 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 
     async function init() {
       try {
-        // Parse URL: /register/{org-slug} or /register/{org-slug}/{season-id}
-        const pathParts = window.location.pathname.split('/').filter(Boolean);
-        const orgSlug = pathParts[1] || getParam('org');
-        const seasonId = pathParts[2] || getParam('season');
+        // Get org slug from URL params or use default
+        const params = new URLSearchParams(window.location.search);
+        const orgSlug = params.get('org') || DEFAULT_ORG_SLUG;
+        const seasonId = params.get('season');
 
-        if (!orgSlug) {
-          showError('Invalid Link', 'No organization specified. Please check your registration link.');
-          return;
-        }
+        console.log('Loading org:', orgSlug, 'season:', seasonId);
 
         // 1. Fetch Organization
         const { data: org, error: orgErr } = await db
@@ -441,11 +458,19 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
           .eq('slug', orgSlug)
           .single();
 
-        if (orgErr || !org) {
+        if (orgErr) {
+          console.error('Org fetch error:', orgErr);
           showError('Not Found', `Organization "${orgSlug}" was not found. Please check your link.`);
           return;
         }
+        
+        if (!org) {
+          showError('Not Found', `Organization "${orgSlug}" was not found. Please check your link.`);
+          return;
+        }
+        
         organization = org;
+        console.log('Loaded org:', org.name);
 
         // 2. Apply Branding
         applyBranding(org);
@@ -463,6 +488,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
         }
 
         const { data: seasons, error: seasonErr } = await query;
+        console.log('Seasons found:', seasons?.length);
 
         if (seasonErr || !seasons?.length) {
           showError('No Open Registration', 'There are currently no seasons open for registration.');
@@ -529,12 +555,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       }
     }
 
-    function getParam(name) {
-      return new URLSearchParams(window.location.search).get(name);
-    }
-
     function applyBranding(org) {
-      const primary = org.settings?.primary_color || '#8B5CF6';
+      const primary = org.settings?.primary_color || '#FFD700';
       document.documentElement.style.setProperty('--primary', primary);
       
       // Darken for hover state
@@ -618,13 +640,13 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       players.push({ id: playerId, data: {} });
 
       const container = document.getElementById('players-list');
-      const playerFields = formConfig.player || {};
+      const playerFields = formConfig.player || getDefaultFormConfig().player;
       
       let html = `
         <div id="${playerId}" class="player-card card rounded-xl p-5">
           <div class="flex justify-between items-center mb-4">
             <h3 class="font-semibold flex items-center gap-2">
-              <span class="text-xl">${sport?.icon || '👤'}</span>
+              <span class="text-xl">${sport?.icon || '🏐'}</span>
               Player ${playerNum}
             </h3>
             ${playerNum > 1 ? `<button onclick="removePlayer('${playerId}')" class="text-red-400 text-sm hover:text-red-300">Remove</button>` : ''}
@@ -632,8 +654,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       `;
 
-      // Dynamic player fields based on config
-      const fieldOrder = ['first_name', 'last_name', 'dob', 'gender', 'grade', 'school', 'jersey_size', 'shorts_size', 'position_preference', 'years_experience', 'previous_team'];
+      // Dynamic player fields
+      const fieldOrder = ['first_name', 'last_name', 'dob', 'gender', 'grade', 'school', 'jersey_size', 'shorts_size'];
       
       for (const fieldKey of fieldOrder) {
         const field = playerFields[fieldKey];
@@ -702,7 +724,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       html += '</div></div>';
       container.insertAdjacentHTML('beforeend', html);
 
-      // Update add button visibility
       if (players.length >= maxPlayersPerReg) {
         document.getElementById('add-player-btn').classList.add('hidden');
       }
@@ -712,12 +733,10 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       players = players.filter(p => p.id !== playerId);
       document.getElementById(playerId)?.remove();
       
-      // Renumber remaining players
       document.querySelectorAll('#players-list .player-card').forEach((card, i) => {
-        card.querySelector('h3').innerHTML = `<span class="text-xl">${sport?.icon || '👤'}</span> Player ${i + 1}`;
+        card.querySelector('h3').innerHTML = `<span class="text-xl">${sport?.icon || '🏐'}</span> Player ${i + 1}`;
       });
 
-      // Show add button again
       document.getElementById('add-player-btn').classList.remove('hidden');
     }
 
@@ -734,20 +753,18 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       const container = document.getElementById('contact-form');
       let html = '';
 
-      const parentFields = formConfig.parent || {};
-      const emergencyFields = formConfig.emergency || {};
-      const medicalFields = formConfig.medical || {};
+      const parentFields = formConfig.parent || getDefaultFormConfig().parent;
+      const emergencyFields = formConfig.emergency || getDefaultFormConfig().emergency;
+      const medicalFields = formConfig.medical || getDefaultFormConfig().medical;
 
-      // Primary Parent Section
+      // Primary Parent
       html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">👤 Primary Parent/Guardian</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
-      
       if (parentFields.parent1_name?.visible) html += buildInputField('parent1_name', parentFields.parent1_name);
       if (parentFields.parent1_email?.visible) html += buildInputField('parent1_email', { ...parentFields.parent1_email, type: 'email' });
       if (parentFields.parent1_phone?.visible) html += buildInputField('parent1_phone', { ...parentFields.parent1_phone, type: 'tel' });
-      
       html += '</div></div>';
 
-      // Secondary Parent Section
+      // Secondary Parent
       const hasParent2 = parentFields.parent2_name?.visible || parentFields.parent2_email?.visible;
       if (hasParent2) {
         html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">👤 Secondary Parent/Guardian <span class="text-sm font-normal text-gray-500">(Optional)</span></h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
@@ -757,9 +774,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
         html += '</div></div>';
       }
 
-      // Address Section
-      const hasAddress = parentFields.address?.visible;
-      if (hasAddress) {
+      // Address
+      if (parentFields.address?.visible) {
         html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">🏠 Home Address</h3><div class="space-y-4">';
         html += buildInputField('address', parentFields.address, 'col-span-2');
         html += '<div class="grid grid-cols-2 md:grid-cols-4 gap-4">';
@@ -769,14 +785,14 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
         html += '</div></div></div>';
       }
 
-      // Emergency Contact Section
+      // Emergency Contact
       html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">🆘 Emergency Contact <span class="text-sm font-normal text-gray-500">(other than parent)</span></h3><div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
       if (emergencyFields.name?.visible) html += buildInputField('emergency_name', emergencyFields.name);
       if (emergencyFields.phone?.visible) html += buildInputField('emergency_phone', { ...emergencyFields.phone, type: 'tel' });
       if (emergencyFields.relation?.visible) html += buildSelectField('emergency_relation', emergencyFields.relation, ['Grandparent', 'Aunt/Uncle', 'Family Friend', 'Neighbor', 'Other']);
       html += '</div></div>';
 
-      // Medical Section
+      // Medical
       const hasMedical = Object.values(medicalFields).some(f => f?.visible);
       if (hasMedical) {
         html += '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4 flex items-center gap-2">🏥 Medical Information</h3><div class="space-y-4">';
@@ -843,52 +859,41 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
     }
 
     // ============================================
-    // WAIVERS FORM
+    // WAIVERS
     // ============================================
     function buildWaiversForm() {
       const container = document.getElementById('waivers-form');
       
-      if (orgWaivers.length === 0) {
-        // Default waivers
-        container.innerHTML = `
-          <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_liability')">
-            <label class="flex items-start gap-4 cursor-pointer">
-              <input type="checkbox" id="waiver_liability" class="mt-1">
-              <div>
-                <p class="font-medium">Liability Waiver <span class="text-red-400">*</span></p>
-                <p class="text-gray-400 text-sm mt-1">I understand participation involves risk of injury. I release ${organization?.name || 'the organization'} from liability.</p>
-              </div>
-            </label>
-          </div>
-          <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_photo')">
-            <label class="flex items-start gap-4 cursor-pointer">
-              <input type="checkbox" id="waiver_photo" class="mt-1">
-              <div>
-                <p class="font-medium">Photo/Video Release</p>
-                <p class="text-gray-400 text-sm mt-1">I grant permission to use photos and videos for promotional purposes.</p>
-              </div>
-            </label>
-          </div>
-        `;
-        return;
-      }
-
-      let html = '';
-      orgWaivers.forEach((waiver, i) => {
-        const isRequired = waiver.is_required !== false;
-        html += `
-          <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_${i}')">
-            <label class="flex items-start gap-4 cursor-pointer">
-              <input type="checkbox" id="waiver_${i}" data-waiver-id="${waiver.id}">
-              <div>
-                <p class="font-medium">${waiver.name} ${isRequired ? '<span class="text-red-400">*</span>' : ''}</p>
-                ${waiver.description ? `<p class="text-gray-400 text-sm mt-1">${waiver.description}</p>` : ''}
-              </div>
-            </label>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
+      // Always show default waivers for now
+      container.innerHTML = `
+        <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_liability')">
+          <label class="flex items-start gap-4 cursor-pointer">
+            <input type="checkbox" id="waiver_liability" class="mt-1">
+            <div>
+              <p class="font-medium">Liability Waiver <span class="text-red-400">*</span></p>
+              <p class="text-gray-400 text-sm mt-1">I understand participation involves risk of injury. I release ${organization?.name || 'the organization'} from liability for any injuries sustained during activities.</p>
+            </div>
+          </label>
+        </div>
+        <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_photo')">
+          <label class="flex items-start gap-4 cursor-pointer">
+            <input type="checkbox" id="waiver_photo" class="mt-1">
+            <div>
+              <p class="font-medium">Photo/Video Release</p>
+              <p class="text-gray-400 text-sm mt-1">I grant permission to use photos and videos of my child for promotional purposes on social media and marketing materials.</p>
+            </div>
+          </label>
+        </div>
+        <div class="waiver-card card rounded-xl p-5 cursor-pointer" onclick="toggleWaiver(this, 'waiver_conduct')">
+          <label class="flex items-start gap-4 cursor-pointer">
+            <input type="checkbox" id="waiver_conduct" class="mt-1">
+            <div>
+              <p class="font-medium">Code of Conduct <span class="text-red-400">*</span></p>
+              <p class="text-gray-400 text-sm mt-1">I agree to uphold good sportsmanship and respect coaches, officials, and other participants at all times.</p>
+            </div>
+          </label>
+        </div>
+      `;
     }
 
     function toggleWaiver(card, checkboxId) {
@@ -922,7 +927,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
     }
 
     function goToStep(step) {
-      // Validate current step before advancing
       if (step > currentStep && !validateStep(currentStep)) return;
 
       document.getElementById(`step-${currentStep}`).classList.add('hidden');
@@ -937,7 +941,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
 
     function validateStep(step) {
       if (step === 1) {
-        // Collect and validate player data
         let valid = true;
         players.forEach(player => {
           const inputs = document.querySelectorAll(`[data-player="${player.id}"]`);
@@ -945,7 +948,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
             const field = input.dataset.field;
             player.data[field] = input.value;
             
-            const fieldConfig = formConfig.player?.[field];
+            const fieldConfig = formConfig.player?.[field] || getDefaultFormConfig().player[field];
             if (fieldConfig?.required && !input.value) {
               input.classList.add('border-red-500');
               valid = false;
@@ -967,25 +970,18 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       }
 
       if (step === 2) {
-        // Validate contact fields
         let valid = true;
-        const allFields = { ...formConfig.parent, ...formConfig.emergency };
+        const requiredIds = ['parent1_name', 'parent1_email', 'parent1_phone', 'emergency_name', 'emergency_phone', 'emergency_relation'];
         
-        for (const [key, config] of Object.entries(allFields)) {
-          if (!config?.visible) continue;
-          
-          const fieldId = key.startsWith('parent') || key === 'address' || key === 'city' || key === 'state' || key === 'zip' 
-            ? key 
-            : `emergency_${key}`;
-          const input = document.getElementById(fieldId);
-          
-          if (input && config.required && !input.value) {
+        requiredIds.forEach(id => {
+          const input = document.getElementById(id);
+          if (input && !input.value) {
             input.classList.add('border-red-500');
             valid = false;
           } else if (input) {
             input.classList.remove('border-red-500');
           }
-        }
+        });
 
         if (!valid) {
           alert('Please fill in all required contact fields.');
@@ -995,7 +991,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       }
 
       if (step === 3) {
-        // Validate waivers and signature
         const signature = document.getElementById('signature-input').value.trim();
         if (!signature) {
           alert('Please type your name to sign the waivers.');
@@ -1004,21 +999,13 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
         }
         document.getElementById('signature-input').classList.remove('border-red-500');
 
-        // Check required waivers
-        if (orgWaivers.length === 0) {
-          // Default waivers - liability is required
-          if (!document.getElementById('waiver_liability')?.checked) {
-            alert('Please accept the Liability Waiver to continue.');
-            return false;
-          }
-        } else {
-          for (let i = 0; i < orgWaivers.length; i++) {
-            const waiver = orgWaivers[i];
-            if (waiver.is_required !== false && !document.getElementById(`waiver_${i}`)?.checked) {
-              alert(`Please accept the "${waiver.name}" waiver to continue.`);
-              return false;
-            }
-          }
+        if (!document.getElementById('waiver_liability')?.checked) {
+          alert('Please accept the Liability Waiver to continue.');
+          return false;
+        }
+        if (!document.getElementById('waiver_conduct')?.checked) {
+          alert('Please accept the Code of Conduct to continue.');
+          return false;
         }
 
         return true;
@@ -1028,18 +1015,18 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
     }
 
     // ============================================
-    // REVIEW SECTION
+    // REVIEW
     // ============================================
     function buildReviewSection() {
       const container = document.getElementById('review-content');
       
-      // Players summary
+      // Players
       let html = '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4">👥 Players</h3><div class="space-y-3">';
       players.forEach(player => {
         const d = player.data;
         html += `
           <div class="flex items-center gap-4 p-3 bg-gray-800/50 rounded-lg">
-            <span class="text-2xl">${sport?.icon || '👤'}</span>
+            <span class="text-2xl">${sport?.icon || '🏐'}</span>
             <div>
               <p class="font-medium">${d.first_name} ${d.last_name}</p>
               <p class="text-sm text-gray-400">${d.grade ? `Grade ${d.grade}` : ''} ${d.gender ? `• ${d.gender}` : ''}</p>
@@ -1049,7 +1036,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       });
       html += '</div></div>';
 
-      // Contact summary
+      // Contact
       const parentName = document.getElementById('parent1_name')?.value || '';
       const parentEmail = document.getElementById('parent1_email')?.value || '';
       const parentPhone = document.getElementById('parent1_phone')?.value || '';
@@ -1065,7 +1052,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
         </div>
       `;
 
-      // Signature confirmation
+      // Signature
       const signature = document.getElementById('signature-input')?.value || '';
       html += `
         <div class="card rounded-xl p-5">
@@ -1076,8 +1063,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       `;
 
       container.innerHTML = html;
-
-      // Fee breakdown
       buildFeeBreakdown();
     }
 
@@ -1086,16 +1071,9 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       const uniformFee = parseFloat(season.fee_uniform) || 0;
       const monthlyFee = parseFloat(season.fee_monthly) || 0;
       const months = parseInt(season.months_in_season) || 0;
-      const earlyBirdDiscount = parseFloat(season.early_bird_discount) || 0;
       
-      // Check if early bird applies
-      const now = new Date();
-      const earlyBirdDeadline = season.early_bird_deadline ? new Date(season.early_bird_deadline) : null;
-      const isEarlyBird = earlyBirdDeadline && now <= earlyBirdDeadline;
-
       const perPlayer = regFee + uniformFee + (monthlyFee * months);
-      const discount = isEarlyBird ? earlyBirdDiscount * players.length : 0;
-      const total = (perPlayer * players.length) - discount;
+      const total = perPlayer * players.length;
 
       let html = `
         <div class="flex justify-between"><span class="text-gray-400">Players</span><span>${players.length}</span></div>
@@ -1108,10 +1086,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       
       if (monthlyFee > 0 && months > 0) {
         html += `<div class="flex justify-between"><span class="text-gray-400">Monthly Fee × ${months}</span><span>$${monthlyFee * months}</span></div>`;
-      }
-
-      if (discount > 0) {
-        html += `<div class="flex justify-between text-emerald-400"><span>🎉 Early Bird Discount</span><span>-$${discount}</span></div>`;
       }
 
       document.getElementById('fee-breakdown').innerHTML = html;
@@ -1127,7 +1101,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       btn.innerHTML = '<span class="animate-pulse">Submitting...</span>';
 
       try {
-        // Gather all data
         const contactData = {
           primary_contact_name: document.getElementById('parent1_name')?.value || '',
           primary_contact_email: (document.getElementById('parent1_email')?.value || '').toLowerCase(),
@@ -1141,14 +1114,14 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
           address: document.getElementById('address')?.value || null,
         };
 
-        // 1. Create family record
+        // Create family
         const { data: family, error: familyErr } = await db.from('families').insert(contactData).select().single();
         if (familyErr) throw familyErr;
 
         const signature = document.getElementById('signature-input')?.value || '';
         const createdPlayers = [];
 
-        // 2. Create players and registrations
+        // Create players
         for (const player of players) {
           const playerData = {
             first_name: player.data.first_name,
@@ -1171,7 +1144,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
             medications: document.getElementById('medications')?.value || null,
             waiver_signed_by: signature,
             waiver_signed_date: new Date().toISOString().split('T')[0],
-            waiver_liability: document.getElementById('waiver_liability')?.checked || orgWaivers.length > 0,
+            waiver_liability: document.getElementById('waiver_liability')?.checked || false,
             waiver_photo: document.getElementById('waiver_photo')?.checked || false,
             registration_source: 'web',
           };
@@ -1179,7 +1152,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
           const { data: newPlayer, error: playerErr } = await db.from('players').insert(playerData).select().single();
           if (playerErr) throw playerErr;
 
-          // Create registration record
+          // Create registration
           await db.from('registrations').insert({
             player_id: newPlayer.id,
             season_id: season.id,
@@ -1192,8 +1165,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
           createdPlayers.push(newPlayer);
         }
 
-        // Show success
-        showSuccess(createdPlayers, family);
+        showSuccess(createdPlayers);
 
       } catch (err) {
         console.error('Submit error:', err);
@@ -1203,64 +1175,20 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
       }
     }
 
-    // ============================================
-    // SUCCESS SCREEN
-    // ============================================
-    function showSuccess(playersData, family) {
+    function showSuccess(playersData) {
       document.getElementById('registration-container').classList.add('hidden');
       document.getElementById('success-screen').classList.remove('hidden');
-
       document.getElementById('success-welcome').textContent = `Welcome to ${organization.name}!`;
 
-      // Players list
       document.getElementById('success-players').innerHTML = playersData.map(p => `
         <div class="flex items-center gap-4 p-3 bg-gray-800/50 rounded-lg">
-          <span class="text-2xl">${sport?.icon || '👤'}</span>
+          <span class="text-2xl">${sport?.icon || '🏐'}</span>
           <div>
             <p class="font-medium">${p.first_name} ${p.last_name}</p>
             <p class="text-sm text-gray-400">${season.name}</p>
           </div>
         </div>
       `).join('');
-
-      // Payment methods
-      const paymentMethods = organization.settings?.payment_methods;
-      if (paymentMethods) {
-        const methods = [];
-        if (paymentMethods.venmo?.enabled) {
-          methods.push({ name: 'Venmo', handle: paymentMethods.venmo.handle, color: 'bg-blue-500', icon: 'V' });
-        }
-        if (paymentMethods.zelle?.enabled) {
-          methods.push({ name: 'Zelle', handle: paymentMethods.zelle.email || paymentMethods.zelle.phone, color: 'bg-purple-600', icon: 'Z' });
-        }
-        if (paymentMethods.cashapp?.enabled) {
-          methods.push({ name: 'Cash App', handle: paymentMethods.cashapp.handle, color: 'bg-green-500', icon: '$' });
-        }
-
-        if (methods.length > 0) {
-          document.getElementById('payment-methods-section').classList.remove('hidden');
-          document.getElementById('payment-methods-list').innerHTML = methods.map(m => `
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 ${m.color} rounded-lg flex items-center justify-center font-bold">${m.icon}</div>
-              <div>
-                <p class="font-medium">${m.name}</p>
-                <p class="text-primary">${m.handle}</p>
-              </div>
-            </div>
-          `).join('');
-        }
-      }
-
-      // Contact info
-      const email = organization.settings?.contact_email || organization.email;
-      const phone = organization.settings?.contact_phone || organization.phone;
-      if (email || phone) {
-        document.getElementById('org-contact-section').classList.remove('hidden');
-        let contactHtml = '';
-        if (email) contactHtml += `<p class="text-gray-300">📧 ${email}</p>`;
-        if (phone) contactHtml += `<p class="text-gray-300 mt-1">📞 ${phone}</p>`;
-        document.getElementById('org-contact-info').innerHTML = contactHtml;
-      }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }

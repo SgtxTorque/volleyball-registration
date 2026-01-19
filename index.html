@@ -32,6 +32,9 @@
       border: solid #000; border-width: 0 2px 2px 0; transform: rotate(45deg);
     }
     input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type="number"] { -moz-appearance: textfield; }
     
     .step-indicator { transition: all 0.3s ease; }
     .step-indicator.active { background-color: var(--primary); color: #000; transform: scale(1.1); }
@@ -60,6 +63,8 @@
     .returning-banner { background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05)); border: 1px solid rgba(16, 185, 129, 0.3); }
     .waitlist-banner { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05)); border: 1px solid rgba(245, 158, 11, 0.3); }
     .prefill-banner { background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05)); border: 1px solid rgba(59, 130, 246, 0.3); }
+    
+    .jersey-pref-input { width: 70px; text-align: center; }
     
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: #1f2937; }
@@ -378,6 +383,10 @@
             school: params.get('school') || '',
             jersey_size: params.get('jersey_size') || '',
             shorts_size: params.get('shorts_size') || '',
+            // Jersey preferences
+            jersey_pref_1: params.get('jersey_pref_1') || '',
+            jersey_pref_2: params.get('jersey_pref_2') || '',
+            jersey_pref_3: params.get('jersey_pref_3') || '',
             // Parent info
             parent_name: params.get('parent_name') || '',
             parent_email: params.get('parent_email') || '',
@@ -457,6 +466,9 @@
             school: urlPrefillData.school,
             uniform_size_jersey: urlPrefillData.jersey_size,
             uniform_size_shorts: urlPrefillData.shorts_size,
+            jersey_pref_1: urlPrefillData.jersey_pref_1,
+            jersey_pref_2: urlPrefillData.jersey_pref_2,
+            jersey_pref_3: urlPrefillData.jersey_pref_3,
           };
           addPlayer(playerPrefill);
           document.getElementById('prefill-banner').classList.remove('hidden');
@@ -650,6 +662,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       `;
 
+      // Standard fields
       const fieldOrder = ['first_name', 'last_name', 'dob', 'gender', 'grade', 'school', 'jersey_size', 'shorts_size'];
       
       for (const fieldKey of fieldOrder) {
@@ -690,19 +703,79 @@
         }
       }
 
-      html += '</div></div>';
+      html += '</div>';
+      
+      // ============================================
+      // JERSEY NUMBER PREFERENCES SECTION
+      // ============================================
+      const jerseyPrefsVisible = playerFields.jersey_pref_1?.visible || playerFields.jersey_pref_2?.visible || playerFields.jersey_pref_3?.visible;
+      
+      if (jerseyPrefsVisible) {
+        const pref1Val = prefillData?.jersey_pref_1 || '';
+        const pref2Val = prefillData?.jersey_pref_2 || '';
+        const pref3Val = prefillData?.jersey_pref_3 || '';
+        
+        html += `
+          <div class="mt-6 pt-4 border-t border-gray-700">
+            <label class="block text-sm text-gray-400 mb-3">Jersey Number Preferences <span class="text-gray-500">(1-99, optional)</span></label>
+            <div class="flex items-center gap-4 flex-wrap">
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500">1st:</span>
+                <input type="number" min="1" max="99" data-player="${playerId}" data-field="jersey_pref_1" value="${pref1Val}" placeholder="#" class="jersey-pref-input field-input bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-center">
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500">2nd:</span>
+                <input type="number" min="1" max="99" data-player="${playerId}" data-field="jersey_pref_2" value="${pref2Val}" placeholder="#" class="jersey-pref-input field-input bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-center">
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-500">3rd:</span>
+                <input type="number" min="1" max="99" data-player="${playerId}" data-field="jersey_pref_3" value="${pref3Val}" placeholder="#" class="jersey-pref-input field-input bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-white text-center">
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">We'll try to assign your preferred number, but availability varies by team.</p>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
       document.getElementById('players-list').insertAdjacentHTML('beforeend', html);
 
       if (prefillData) {
         const player = players.find(p => p.id === playerId);
-        if (player) player.data = { first_name: prefillData.first_name, last_name: prefillData.last_name, dob: prefillData.dob, gender: prefillData.gender, grade: prefillData.grade === 0 ? 'K' : String(prefillData.grade), school: prefillData.school, jersey_size: prefillData.uniform_size_jersey, shorts_size: prefillData.uniform_size_shorts };
+        if (player) {
+          player.data = { 
+            first_name: prefillData.first_name, 
+            last_name: prefillData.last_name, 
+            dob: prefillData.dob, 
+            gender: prefillData.gender, 
+            grade: prefillData.grade === 0 ? 'K' : String(prefillData.grade), 
+            school: prefillData.school, 
+            jersey_size: prefillData.uniform_size_jersey, 
+            shorts_size: prefillData.uniform_size_shorts,
+            jersey_pref_1: prefillData.jersey_pref_1,
+            jersey_pref_2: prefillData.jersey_pref_2,
+            jersey_pref_3: prefillData.jersey_pref_3,
+          };
+        }
       }
 
       if (players.length >= maxPlayersPerReg) document.getElementById('add-player-btn').classList.add('hidden');
     }
 
     function getPrefillValue(data, fieldKey) {
-      const map = { first_name: data.first_name, last_name: data.last_name, dob: data.dob, gender: data.gender, grade: data.grade === 0 ? 'K' : String(data.grade || ''), school: data.school, jersey_size: data.uniform_size_jersey, shorts_size: data.uniform_size_shorts };
+      const map = { 
+        first_name: data.first_name, 
+        last_name: data.last_name, 
+        dob: data.dob, 
+        gender: data.gender, 
+        grade: data.grade === 0 ? 'K' : String(data.grade || ''), 
+        school: data.school, 
+        jersey_size: data.uniform_size_jersey, 
+        shorts_size: data.uniform_size_shorts,
+        jersey_pref_1: data.jersey_pref_1,
+        jersey_pref_2: data.jersey_pref_2,
+        jersey_pref_3: data.jersey_pref_3,
+      };
       return map[fieldKey] || '';
     }
 
@@ -806,9 +879,23 @@
     function showError(title, msg) { document.getElementById('loading-screen').classList.add('hidden'); document.getElementById('error-title').textContent = title; document.getElementById('error-message').textContent = msg; document.getElementById('error-screen').classList.remove('hidden'); }
     function showClosed(msg) { document.getElementById('loading-screen').classList.add('hidden'); document.getElementById('closed-dates').textContent = msg; document.getElementById('closed-screen').classList.remove('hidden'); }
     function formatDate(d) { return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+    
     function getDefaultFormConfig() {
       return {
-        player: { first_name: { visible: true, required: true, label: 'First Name' }, last_name: { visible: true, required: true, label: 'Last Name' }, dob: { visible: true, required: true, label: 'Date of Birth' }, gender: { visible: true, required: true, label: 'Gender' }, grade: { visible: true, required: true, label: 'Grade' }, school: { visible: true, required: false, label: 'School' }, jersey_size: { visible: true, required: true, label: 'Jersey Size' }, shorts_size: { visible: false, required: false, label: 'Shorts Size' } },
+        player: { 
+          first_name: { visible: true, required: true, label: 'First Name' }, 
+          last_name: { visible: true, required: true, label: 'Last Name' }, 
+          dob: { visible: true, required: true, label: 'Date of Birth' }, 
+          gender: { visible: true, required: true, label: 'Gender' }, 
+          grade: { visible: true, required: true, label: 'Grade' }, 
+          school: { visible: true, required: false, label: 'School' }, 
+          jersey_size: { visible: true, required: true, label: 'Jersey Size' }, 
+          shorts_size: { visible: false, required: false, label: 'Shorts Size' },
+          // Jersey preferences - NEW!
+          jersey_pref_1: { visible: true, required: false, label: 'Jersey Preference 1' },
+          jersey_pref_2: { visible: true, required: false, label: 'Jersey Preference 2' },
+          jersey_pref_3: { visible: true, required: false, label: 'Jersey Preference 3' },
+        },
         parent: { parent1_name: { visible: true, required: true, label: 'Parent/Guardian Name' }, parent1_email: { visible: true, required: true, label: 'Email' }, parent1_phone: { visible: true, required: true, label: 'Phone' }, parent2_name: { visible: true, required: false, label: 'Parent 2 Name' }, parent2_email: { visible: true, required: false, label: 'Parent 2 Email' }, parent2_phone: { visible: true, required: false, label: 'Parent 2 Phone' }, address: { visible: true, required: false, label: 'Street Address' }, city: { visible: true, required: false, label: 'City' }, state: { visible: true, required: false, label: 'State' }, zip: { visible: true, required: false, label: 'ZIP Code' } },
         emergency: { name: { visible: true, required: true, label: 'Emergency Contact' }, phone: { visible: true, required: true, label: 'Emergency Phone' }, relation: { visible: true, required: true, label: 'Relationship' } },
         medical: { allergies: { visible: true, required: false, label: 'Allergies' }, medical_conditions: { visible: true, required: false, label: 'Medical Conditions' }, medications: { visible: true, required: false, label: 'Medications' } }
@@ -848,9 +935,18 @@
             if (cfg?.required && !input.value) { input.classList.add('border-red-500'); valid = false; }
             else { input.classList.remove('border-red-500'); }
           });
+          
+          // Validate jersey preferences are in range if provided
+          ['jersey_pref_1', 'jersey_pref_2', 'jersey_pref_3'].forEach(prefField => {
+            const val = player.data[prefField];
+            if (val && (parseInt(val) < 1 || parseInt(val) > 99)) {
+              const input = document.querySelector(`[data-player="${player.id}"][data-field="${prefField}"]`);
+              if (input) { input.classList.add('border-red-500'); valid = false; }
+            }
+          });
         });
         if (players.length === 0) { alert('Please add at least one player.'); return false; }
-        if (!valid) { alert('Please fill in all required player fields.'); return false; }
+        if (!valid) { alert('Please fill in all required player fields. Jersey numbers must be 1-99.'); return false; }
         return true;
       }
       if (step === 2) {
@@ -879,7 +975,9 @@
       let html = '<div class="card rounded-xl p-5"><h3 class="font-semibold mb-4">👥 Players</h3><div class="space-y-3">';
       players.forEach(p => {
         const d = p.data;
-        html += `<div class="flex items-center gap-4 p-3 bg-gray-800/50 rounded-lg"><span class="text-2xl">${sport?.icon || '🏐'}</span><div><p class="font-medium">${d.first_name} ${d.last_name}</p><p class="text-sm text-gray-400">${d.grade ? `Grade ${d.grade}` : ''} ${d.gender ? `• ${d.gender}` : ''}</p></div></div>`;
+        const jerseyPrefs = [d.jersey_pref_1, d.jersey_pref_2, d.jersey_pref_3].filter(Boolean);
+        const jerseyStr = jerseyPrefs.length > 0 ? ` • Jersey: ${jerseyPrefs.join(', ')}` : '';
+        html += `<div class="flex items-center gap-4 p-3 bg-gray-800/50 rounded-lg"><span class="text-2xl">${sport?.icon || '🏐'}</span><div><p class="font-medium">${d.first_name} ${d.last_name}</p><p class="text-sm text-gray-400">${d.grade ? `Grade ${d.grade}` : ''} ${d.gender ? `• ${d.gender}` : ''}${jerseyStr}</p></div></div>`;
       });
       html += '</div></div>';
 
@@ -948,23 +1046,36 @@
 
         for (const player of players) {
           const playerData = {
-            first_name: player.data.first_name, last_name: player.data.last_name,
-            dob: player.data.dob || null, gender: player.data.gender || null,
+            first_name: player.data.first_name, 
+            last_name: player.data.last_name,
+            dob: player.data.dob || null, 
+            gender: player.data.gender || null,
             grade: player.data.grade === 'K' ? 0 : parseInt(player.data.grade) || null,
-            school: player.data.school || null, uniform_size_jersey: player.data.jersey_size || null,
-            uniform_size_shorts: player.data.shorts_size || null, sport_id: sport?.id || null,
-            season_id: season.id, family_id: family.id, parent_name: contactData.primary_contact_name,
-            parent_email: contactData.primary_contact_email, parent_phone: contactData.primary_contact_phone,
-            address: contactData.address, emergency_contact_name: contactData.emergency_contact_name,
+            school: player.data.school || null, 
+            uniform_size_jersey: player.data.jersey_size || null,
+            uniform_size_shorts: player.data.shorts_size || null, 
+            sport_id: sport?.id || null,
+            season_id: season.id, 
+            family_id: family.id, 
+            parent_name: contactData.primary_contact_name,
+            parent_email: contactData.primary_contact_email, 
+            parent_phone: contactData.primary_contact_phone,
+            address: contactData.address, 
+            emergency_contact_name: contactData.emergency_contact_name,
             emergency_contact_phone: contactData.emergency_contact_phone,
             emergency_contact_relation: contactData.emergency_contact_relation,
             medical_conditions: document.getElementById('medical_conditions')?.value || null,
             allergies: document.getElementById('allergies')?.value || null,
             medications: document.getElementById('medications')?.value || null,
-            waiver_signed_by: signature, waiver_signed_date: new Date().toISOString().split('T')[0],
+            waiver_signed_by: signature, 
+            waiver_signed_date: new Date().toISOString().split('T')[0],
             waiver_liability: document.getElementById('waiver_liability')?.checked || false,
             waiver_photo: document.getElementById('waiver_photo')?.checked || false,
             registration_source: 'web',
+            // Jersey preferences - NEW!
+            jersey_pref_1: player.data.jersey_pref_1 ? parseInt(player.data.jersey_pref_1) : null,
+            jersey_pref_2: player.data.jersey_pref_2 ? parseInt(player.data.jersey_pref_2) : null,
+            jersey_pref_3: player.data.jersey_pref_3 ? parseInt(player.data.jersey_pref_3) : null,
           };
 
           const { data: newPlayer, error: playerErr } = await db.from('players').insert(playerData).select().single();
